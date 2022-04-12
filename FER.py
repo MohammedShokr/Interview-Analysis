@@ -110,6 +110,6 @@ def analyze_face(video_file):
     cv2.destroyAllWindows()
     expression_weights = [weight/frame_cnt for weight in expression_matrix]
     score = scoring_expression(expression_weights)
-    return score
+    return score, expression_weights
 
-#print(analyze_face("./interview samples/introduceyourself.webm"))
+#print(analyze_face(r"C:\Users\messi\Desktop\GP\test1.webm"))

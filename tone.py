@@ -95,6 +95,8 @@ def analyze_tone(video_file):
     wav_num = divide_audio(audio_file, "./tone_analysis/seg_result")
     prediction = analyze_audio_segments("./tone_analysis/seg_result", wav_num)
     #prediction = analyze_audio(video_file)
-    return prediction
+    tone_weights = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.4]
+    tone_score = 0
+    return tone_score, tone_weights
 
-print(analyze_tone("./interview samples/introduceyourself.webm"))
+#print(analyze_tone("./interview samples/introduceyourself.webm"))

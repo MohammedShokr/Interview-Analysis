@@ -49,13 +49,41 @@ def add_analysis(cand_ID, job_ID, question_no, FER , FER_score, tone, tone_score
                  VALUES (?,?,?,?,?,?,?,?,?,?)''', (cand_ID, job_ID, question_no, FER , FER_score, tone, tone_score,coherence_score, pronunciation_score, fluency_score))
     conn.commit()
 
+def add_company(comp_ID, comp_name, website):
+    c.excute('''INSERT INTO company(comp_ID, comp_name, website)
+                 VALUES (?,?,?)''', (comp_ID, comp_name, website))
+    conn.commit()
 
-def view_all_data():
+def add_job(job_ID, job_title, job_req, job_description, comp_ID):
+    c.excute('''INSERT INTO job(job_ID, job_title, job_req, job_description, comp_ID)
+                 VALUES (?,?,?,?,?)''', (job_ID, job_title, job_req, job_description, comp_ID))
+    conn.commit()
+
+def add_candidate(cand_ID, cand_name, cand_qualifications):
+    c.excute('''INSERT INTO candidate(cand_ID, cand_name, cand_qualifications)
+                 VALUES (?,?,?)''', (cand_ID, cand_name, cand_qualifications))
+    conn.commit()
+
+def view_analysis_data():
     c.execute('SELECT * FROM analysis')
+    data = c.fetchall()
+    return data
+
+def view_company_data():
+    c.execute('SELECT * FROM company')
+    data = c.fetchall()
+    return data
+
+def view_job_data():
+    c.execute('SELECT * FROM job')
+    data = c.fetchall()
+    return data
+
+def view_candidate_data():
+    c.execute('SELECT * FROM candidate')
     data = c.fetchall()
     return data
 
 def view_schema():
     c.execute("SELECT name FROM sqlite_master WHERE type='table';")
     return c.fetchall()
-

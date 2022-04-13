@@ -50,17 +50,17 @@ def add_analysis(cand_ID, job_ID, question_no, FER , FER_score, tone, tone_score
     conn.commit()
 
 def add_company(comp_ID, comp_name, website):
-    c.excute('''INSERT INTO company(comp_ID, comp_name, website)
+    c.execute('''INSERT INTO company(comp_ID, comp_name, website)
                  VALUES (?,?,?)''', (comp_ID, comp_name, website))
     conn.commit()
 
 def add_job(job_ID, job_title, job_req, job_description, comp_ID):
-    c.excute('''INSERT INTO job(job_ID, job_title, job_req, job_description, comp_ID)
+    c.execute('''INSERT INTO job(job_ID, job_title, job_req, job_description, comp_ID)
                  VALUES (?,?,?,?,?)''', (job_ID, job_title, job_req, job_description, comp_ID))
     conn.commit()
 
 def add_candidate(cand_ID, cand_name, cand_qualifications):
-    c.excute('''INSERT INTO candidate(cand_ID, cand_name, cand_qualifications)
+    c.execute('''INSERT INTO candidate(cand_ID, cand_name, cand_qualifications)
                  VALUES (?,?,?)''', (cand_ID, cand_name, cand_qualifications))
     conn.commit()
 

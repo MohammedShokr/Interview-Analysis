@@ -5,6 +5,7 @@ from tone import analyze_tone
 def load_view():
     with st.sidebar:
         st.header("Hello form analysis")
+        selections = st.multiselect('Select what you want to analyze', ["Facial Analysis", "Tone Analysis", "English Text Coherence"], ["Facial Analysis", "Tone Analysis"])
     uploaded_file = st.file_uploader("Choose a file")
     st.video(uploaded_file)
     col1, col2, col3, col4 = st.columns([1,1,1,1])

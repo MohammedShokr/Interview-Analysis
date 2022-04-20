@@ -1,3 +1,4 @@
+from traceback import print_tb
 import nltk
 import spacy
 import gensim
@@ -10,7 +11,7 @@ import gensim.corpora as corpora
 stop_words = stopwords.words('english')
 stop_words.extend(['from', 'subject', 're', 'edu', 'use'])
 
-def coherence_scoring(text, num_topics):
+def coherence_scoring(text, num_topics=5):
     data_words = nltk.word_tokenize(text)
 
     # Build the bigram and trigram models
@@ -73,3 +74,6 @@ def coherence_scoring(text, num_topics):
     coherence_lda = coherence_model_lda.get_coherence()
     return coherence_lda
 
+
+if __name__ == '__main__':
+    print(coherence_scoring("this is a test sentence"))

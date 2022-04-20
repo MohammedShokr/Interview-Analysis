@@ -1,18 +1,10 @@
-import os
 import librosa
 import librosa.display
-from pydub import AudioSegment
 import keras
 import pickle
 import numpy as np
-from moviepy.editor import *
+from audio_processing import *
 
-def convert_video_to_audio(video_file, output_ext="wav"):
-    filename, ext = os.path.splitext(video_file)
-    audio_file = f"{filename}.{output_ext}"
-    video = VideoFileClip(video_file)
-    video.audio.write_audiofile(audio_file)
-    return audio_file
 
 def analyze_audio(audio_path):
     # used internal functions
@@ -61,26 +53,6 @@ def analyze_audio(audio_path):
     # return the predicted label
     return y_predict[0][0]
 
-def divide_audio(audio_path, output_folder_path):
-    my_audio = AudioSegment.from_wav(audio_path)
-    audio_len = len(my_audio)
-    # self.TextResultTone.append(audio_len)
-    num_of_segments = audio_len // 5000
-    remainder = audio_len % 5000
-
-    seg = 0
-    wav_num = 1
-    for _ in range(num_of_segments):
-        # self.TextResultTone.append(wav_num)
-        segment = my_audio[seg:seg + 5000]
-        segment.export(f'{output_folder_path}/wav_{wav_num}.wav', format="wav")
-        seg += 3000
-        wav_num += 1
-    if remainder > 0:
-        segment = my_audio[-5000:]
-        segment.export(f'{output_folder_path}/wav_{wav_num}.wav', format="wav")
-    return wav_num
-
 
 def analyze_audio_segments(segments_folder_path, wav_num):
     text = ""
@@ -95,8 +67,6 @@ def analyze_tone(video_file):
     wav_num = divide_audio(audio_file, "./tone_analysis/seg_result")
     prediction = analyze_audio_segments("./tone_analysis/seg_result", wav_num)
     #prediction = analyze_audio(video_file)
-    tone_weights = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.4]
-    tone_score = 0
-    return tone_score, tone_weights
+    return prediction
 
-#print(analyze_tone("./interview samples/introduceyourself.webm"))
+print(analyze_tone("./interview samples/introduceyourself.webm"))

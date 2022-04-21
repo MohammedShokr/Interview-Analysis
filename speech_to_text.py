@@ -29,8 +29,3 @@ def long_speech_to_text(AUDIO_FILE, OUT_PATH):
         audio_path = f'{OUT_PATH}/wav_{i}.wav'
         text += str(short_speech_to_text(audio_path)) + "\n"
     return text
-
-
-path = "./A one minute TEDx Talk for the digital age - Woody Roseland - TEDxMileHigh.wav"
-print("\nFull text:", long_speech_to_text(path, "./tone_analysis/seg_result"))
-

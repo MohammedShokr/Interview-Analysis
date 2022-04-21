@@ -6,6 +6,7 @@ from gensim.utils import simple_preprocess
 from nltk.corpus import stopwords
 from gensim.models import CoherenceModel
 import gensim.corpora as corpora
+from audio_processing import *
 
 # NLTK Stop words
 stop_words = stopwords.words('english')
@@ -61,7 +62,7 @@ def coherence_scoring(text, num_topics=5):
     # Term Document Frequency
     corpus = [id2word.doc2bow(text) for text in texts]
 
-    lda_model = gensim.models.LdaMulticore(corpus=corpus,
+    lda_model = gensim.models.LdaModel(corpus=corpus,
                                            id2word=id2word,
                                            num_topics=num_topics,
                                            random_state=100,
@@ -73,7 +74,3 @@ def coherence_scoring(text, num_topics=5):
     coherence_model_lda = CoherenceModel(model=lda_model, texts=data_lemmatized, dictionary=id2word, coherence='c_v')
     coherence_lda = coherence_model_lda.get_coherence()
     return coherence_lda
-
-
-if __name__ == '__main__':
-    print(coherence_scoring("this is a test sentence"))

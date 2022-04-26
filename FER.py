@@ -87,7 +87,7 @@ def face_detector(img):
 def analyze_face(video_file):
     cap = cv2.VideoCapture(video_file)
     c = 0
-    expression_matrix = [0, 0, 0, 0, 0, 0, 0]
+    expression_matrix = []
     frame_cnt = 0
     while True:
         c += 1
@@ -103,13 +103,13 @@ def analyze_face(video_file):
 
                 # make a prediction on the ROI, then lookup the class
                 preds = model.predict(roi)[0]
-                expression_matrix += preds
+                expression_matrix.append(preds.tolist())
                 frame_cnt += 1
 
     cap.release()
     cv2.destroyAllWindows()
-    expression_weights = [weight/frame_cnt for weight in expression_matrix]
+    expression_weights = np.mean(expression_matrix, axis=0).tolist()
     score = scoring_expression(expression_weights)
-    return score, expression_weights
+    return score, expression_matrix, expression_weights
 
-#print(analyze_face(r"C:\Users\messi\Desktop\GP\test1.webm"))
+#print(analyze_face("./test_interviews/test1.mp4"))

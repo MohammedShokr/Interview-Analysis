@@ -62,11 +62,8 @@ def analyze_audio_segments(segments_folder_path, wav_num):
         text += "tone of wav_"+str(i)+": "+str(prediction)+"\n"
     return text
 
-def analyze_tone(video_file):
-    audio_file = convert_video_to_audio(video_file)
+def analyze_tone(audio_file):
     wav_num = divide_audio(audio_file, "./tone_analysis/seg_result")
     prediction = analyze_audio_segments("./tone_analysis/seg_result", wav_num)
     #prediction = analyze_audio(video_file)
-    return prediction
-
-print(analyze_tone("./interview samples/introduceyourself.webm"))
+    return 0, prediction

@@ -7,8 +7,15 @@ st.set_page_config(layout="wide", page_title='Navbar sample')
 st.set_option('deprecation.showPyplotGlobalUse', False)
 utl.inject_custom_css()
 utl.navbar_component()
-create_tables()
-print(view_schema())
+st.markdown(
+    """
+    <style>
+        .stProgress > div > div > div > div {
+            background-image: linear-gradient(to right, #99ff99 , #00ccff);
+        }
+    </style>""",
+    unsafe_allow_html=True,
+)
 def navigation():
     route = utl.get_current_route()
     if route == "home":

@@ -1,9 +1,9 @@
 import streamlit as st
 import utils as utl
-from views import home,about,analysis,options,configuration
+from views import data_mng, home,analysis,options,configuration
 from database_functions import *
 
-st.set_page_config(layout="wide", page_title='Navbar sample')
+st.set_page_config(layout="wide", page_title='Soft-Skill Interview Analysis')
 st.set_option('deprecation.showPyplotGlobalUse', False)
 utl.inject_custom_css()
 utl.navbar_component()
@@ -20,8 +20,8 @@ def navigation():
     route = utl.get_current_route()
     if route == "home":
         home.load_view()
-    elif route == "about":
-        about.load_view()
+    elif route == "data_mng":
+        data_mng.load_view()
     elif route == "analysis":
         analysis.load_view()
     elif route == "options":

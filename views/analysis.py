@@ -132,11 +132,10 @@ def load_view():
 
         except:
             st.info("Report will be shown after analysis")
-    with col2:
-        addAnalysisBtn = st.button("Add to Dataset")
+    addAnalysisBtn = st.button("Add to Dataset")
     if addAnalysisBtn:
         st.write(curr_cand_id)
-        st.write(cand_id)
+        st.write(curr_cand_data)
         st.write(job_id)
         st.write(ques_number)
         st.write(interview_number)

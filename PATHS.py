@@ -1,7 +1,8 @@
 NAVBAR_PATHS = {
     'HOME':'home',
-    'ABOUT': 'about',
-    'ANALYSIS': 'analysis'
+    'DATA MANAGEMENT': 'data_mng',
+    'ANALYSIS': 'analysis',
+    'REPORTS': 'reports'
 }
 
 SETTINGS = {

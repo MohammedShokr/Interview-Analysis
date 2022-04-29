@@ -86,7 +86,7 @@ def load_view():
             if "Tone Analysis" in selections:
                 st.header("Tone")
                 with st.spinner("Tone expressions are being analyzed"):
-                    tone_score, tone_weights = analyze_tone(audio_path)
+                    tone_score, tone_matrix, tone_weights = analyze_tone(audio_path)
                 st.write(f'The score based on tone analysis is: {tone_score}')
                 st.progress(tone_score/10)
 
@@ -104,7 +104,7 @@ def load_view():
                 st.progress(overall_score/10)
         else:
             st.write("ERROR: No video found, please select a video and try again!")
-    
+
     if reportBx:
         try:
             with st.expander("Show a report"):
@@ -132,3 +132,12 @@ def load_view():
 
         except:
             st.info("Report will be shown after analysis")
+    with col2:
+        addAnalysisBtn = st.button("Add to Dataset")
+    if addAnalysisBtn:
+        st.write(curr_cand_id)
+        st.write(cand_id)
+        st.write(job_id)
+        st.write(ques_number)
+        st.write(interview_number)
+        #add_analysis()

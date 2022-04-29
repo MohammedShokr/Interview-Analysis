@@ -6,6 +6,50 @@ import numpy as np
 from audio_processing import *
 
 
+def scoring_expression(expression_weights):
+    score = 0
+    angry = expression_weights[0]
+    if angry < 0.1:
+        score += 10
+    elif angry < 0.3:
+        score += 5
+    elif angry < 0.5:
+        score += 1
+    fear = expression_weights[1]
+    if fear < 0.1:
+        score += 10
+    elif fear < 0.3:
+        score += 5
+    elif fear < 0.5:
+        score += 1
+    happy = expression_weights[2]
+    if happy < 0.1:
+        score += 1
+    elif happy < 0.3:
+        score += 5
+    elif happy < 0.6:
+        score += 10
+    elif happy < 0.8:
+        score += 5
+    else:
+        score += 1
+    sad = expression_weights[3]
+    if sad < 0.2:
+        score += 10
+    elif sad < 0.3:
+        score += 5
+    elif sad < 0.5:
+        score += 1
+    surprise = expression_weights[4]
+    if surprise < 0.3:
+        score += 10
+    elif surprise < 0.5:
+        score += 5
+    else:
+        score += 1
+    return round(score/5, 2)
+
+
 def analyze_audio(audio_path):
     # used internal functions
     def extract_features(data, sample_rate):
@@ -38,10 +82,10 @@ def analyze_audio(audio_path):
         return result
 
     # load needed objects (model and scaler and encoder)
-    model = keras.models.load_model('./tone_analysis/model')
-    with open(r"./tone_analysis/scaler", "rb") as input_file:
+    model = keras.models.load_model('./tone_analysis/model') #####./tone_analysis/model
+    with open(r"./tone_analysis/scaler", "rb") as input_file: ####./tone_analysis/scaler
         scaler = pickle.load(input_file)
-    with open(r"./tone_analysis/encoder", "rb") as input_file:
+    with open(r"./tone_analysis/encoder", "rb") as input_file: ####./tone_analysis/encoder
         encoder = pickle.load(input_file)
     # apply feature extraction and transformations before predicting
     feature = get_features(audio_path)
@@ -49,21 +93,21 @@ def analyze_audio(audio_path):
     transformed_feature = np.expand_dims(transformed_feature, axis=2)
     # predict using the model
     predict_test = model.predict(transformed_feature)
-    y_predict = encoder.inverse_transform(predict_test)
-    # return the predicted label
-    return y_predict[0][0]
+    return predict_test[0]
 
 
 def analyze_audio_segments(segments_folder_path, wav_num):
-    text = ""
-    for i in range(1, wav_num):
-        audio_path = f'{segments_folder_path}/wav_{i}.wav'
+    expression_matrix = []
+    for i in range(0, wav_num):
+        audio_path = f'{segments_folder_path}/wav_{i+1}.wav'
         prediction = analyze_audio(audio_path)
-        text += "tone of wav_"+str(i)+": "+str(prediction)+"\n"
-    return text
+        expression_matrix.append(prediction)
+    return expression_matrix
+
 
 def analyze_tone(audio_file):
-    wav_num = divide_audio(audio_file, "./tone_analysis/seg_result")
-    prediction = analyze_audio_segments("./tone_analysis/seg_result", wav_num)
-    #prediction = analyze_audio(video_file)
-    return 0, prediction
+    wav_num = divide_audio(audio_file, "./tone_analysis/seg_result") #CHANGE PATH TO: "./tone_analysis/seg_result"
+    expression_matrix = analyze_audio_segments("./tone_analysis/seg_result", wav_num) #CHANGE PATH TO: "./tone_analysis/seg_result"
+    expression_weights = np.mean(expression_matrix, axis=0).tolist()
+    score = scoring_expression(expression_weights)
+    return score, expression_matrix, expression_weights

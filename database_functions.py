@@ -92,3 +92,8 @@ def get_cand(cand_id):
 	c.execute('SELECT * FROM candidate WHERE cand_id="{}"'.format(cand_id))
 	data = c.fetchall()
 	return data
+
+def get_job(job_id):
+    c.execute('SELECT * FROM job WHERE job_id="{}"'.format(job_id))
+    data = c.fetchall()
+    return data

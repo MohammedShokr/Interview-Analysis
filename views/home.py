@@ -5,3 +5,4 @@ def load_view():
     cand_name = st.text_input('Full name')
     cand_id = st.text_input('National ID')
     cand_job = st.text_input('Applying for')
+

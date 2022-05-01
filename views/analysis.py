@@ -31,14 +31,7 @@ def load_view():
     ######################## Database Management ############################
     curr_cand_id = st.text_input("Ender your candidate National ID")
     curr_cand_data = get_cand(curr_cand_id)
-    if curr_cand_data:
-        saved_jobs = pd.DataFrame(view_job_data(),columns=["ID","Title","Requirements", "Description", "Company"])
-        job_id = st.selectbox("Choose job", saved_jobs["Title"])
-        ques_number = st.number_input('Question No.', 0, 10)
-        interview_number = st.number_input('Interview No.', 0, 10)
-        st.write(saved_jobs)
-        st.write(ques_number)
-    else:
+    if not curr_cand_data:
         st.error('A candidate of this ID is not in the database')
         with st.expander("Add a new candidate"):
             add_cand_form = st.form(key='add_candidate')
@@ -50,6 +43,7 @@ def load_view():
             try:
                 add_candidate(cand_id, cand_name, cand_qualifications)
                 st.success('The candidate added successfuly to the database')
+   
             except:
                 st.error('This data cannot be inserted. Already an ID')
             with st.expander("View All Candidates "):
@@ -57,6 +51,14 @@ def load_view():
                 # st.write(result)
                 cand_df = pd.DataFrame(result,columns=["ID","Name","Qualification"])
                 st.dataframe(cand_df)
+    
+    col_11, col_12 = st.columns(2)           
+    with st.form('add_analysis'):
+        job_id = col_11.text_input("Enter job ID", value=1)
+        curr_job_data = get_job(job_id)
+        job_title = col_12.text_input("Job Title", value=curr_job_data[0][1], disabled=True)
+        ques_number = col_11.number_input('Question No.', 0, 10)   
+        interview_number = col_12.number_input('Interview No.', 0, 10)
     #################################################################################################
     
     uploaded_file = st.file_uploader("Choose a file")
@@ -66,9 +68,7 @@ def load_view():
         video_path = "./test_interviews/testout_simple.mp4"
         
         with open(video_path, 'wb') as out:  ## Open temporary file as bytes
-            out.write(g.read())  ## Read bytes into file
-        if "Tone Analysis" or "English Text Coherence" in selections:
-            audio_path = convert_video_to_audio(video_path)
+            out.write(g.read())  ## Read bytes and put it into the file
 
     ########################################################################################################
     col1, col2, col3 = st.columns([5,4,3])
@@ -76,6 +76,8 @@ def load_view():
         analyzeBtn = st.button('Analyze')
     if analyzeBtn:
         if uploaded_file:
+            if "Tone Analysis" or "English Text Coherence" in selections:
+                audio_path = convert_video_to_audio(video_path)
             if "Facial Analysis" in selections:
                 st.header("FER")
                 with st.spinner("Facial expressions are being analyzed"):
@@ -102,6 +104,7 @@ def load_view():
                 st.header("Overall score")
                 st.write(f'{round(overall_score*10,2)}%')
                 st.progress(overall_score/10)
+            
         else:
             st.write("ERROR: No video found, please select a video and try again!")
 
@@ -132,10 +135,14 @@ def load_view():
 
         except:
             st.info("Report will be shown after analysis")
+    
+    
     addAnalysisBtn = st.button("Add to Dataset")
     if addAnalysisBtn:
-        st.write(curr_cand_id)
-        st.write(curr_cand_data)
+        if curr_cand_data:
+            st.write(curr_cand_id)
+        else:
+            st.write(cand_id)
         st.write(job_id)
         st.write(ques_number)
         st.write(interview_number)

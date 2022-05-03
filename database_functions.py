@@ -97,3 +97,13 @@ def get_job(job_id):
     c.execute('SELECT * FROM job WHERE job_id="{}"'.format(job_id))
     data = c.fetchall()
     return data
+
+def get_analysis_with_job(job_id):
+    c.execute('SELECT * FROM analysis WHERE job_id="{}"'.format(job_id))
+    data = c.fetchall()
+    return data
+
+def get_analysis_with_cand(cand_id):
+    c.execute('SELECT * FROM analysis WHERE cand_id="{}"'.format(cand_id))
+    data = c.fetchall()
+    return data

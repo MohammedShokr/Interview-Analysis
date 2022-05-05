@@ -71,11 +71,11 @@ def navigation():
         if route == "home":
             home.load_view()
         elif route == "data_mng":
-            data_mng.load_view()
+            data_mng.load_view(logged_in[1])
         elif route == "analysis":
             analysis.load_view(logged_in[1])
         elif route == "reports":
-            reports.load_view()
+            reports.load_view(logged_in[1])
         elif route == "options":
             options.load_view()
         elif route == "configuration":

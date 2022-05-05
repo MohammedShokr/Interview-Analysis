@@ -1,7 +1,7 @@
 import streamlit as st
 from database_functions import *
 
-def load_view():
+def load_view(comp_id):
     with st.sidebar:
         menu = ["Add new job","Add new candidate","Update","Delete"]
         choice = st.selectbox("Choose what you want to do",menu)
@@ -13,9 +13,7 @@ def load_view():
             
         with col2:
             job_title = st.text_input("Job Title")
-            #job_status = st.selectbox("Job Status",["Open","Inprogress","Closed"])
-            #job_date = st.date_input("")
-            
+
         job_req = st.text_input("Job requirements")
         job_description = st.text_input("Job desciption")
         if st.button("Add Job"):

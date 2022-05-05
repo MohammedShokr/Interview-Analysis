@@ -66,8 +66,8 @@ def load_view(comp_id):
         available_jobs = [job[0] for job in get_jobs_comp(comp_id)]
         
         job_title = col_11.selectbox("Choose job for analysis", available_jobs)
-        ques_number = col_11.number_input('Question No.', 0, 10)   
-        interview_number = col_12.number_input('Interview No.', 0, 10)
+        ques_number = col_11.number_input('Question No.', 1, 50)   
+        interview_number = col_12.number_input('Interview No.', 1, 10)
     #################################################################################################
     
     uploaded_file = st.file_uploader("Choose a file")
@@ -117,6 +117,12 @@ def load_view(comp_id):
                 st.write(f'{round(overall_score,2)}%')
                 st.progress(overall_score/100)
             
+            if addAnalysisBx:
+                if curr_cand_data:
+                    cand_id = curr_cand_id
+                add_analysis(cand_id, comp_id, job_title, interview_number, ques_number, str(FER_matrix),\
+                    FER_score, str(tone_matrix), tone_score, str(fluency_matrix), fluency_score,\
+                    coherence_score, overall_score)
         else:
             st.write("ERROR: No video found, please select a video and try again!")
 
@@ -149,10 +155,4 @@ def load_view(comp_id):
             st.info("Report will be shown after analysis")
     
     
-    if addAnalysisBx:
-        if curr_cand_data:
-            cand_id = curr_cand_id
-        if overall_score:
-            add_analysis(cand_id, comp_id, job_title, interview_number, ques_number, str(FER_matrix),\
-                FER_score, str(tone_matrix), tone_score, str(fluency_matrix), fluency_score,\
-                coherence_score, overall_score)
+    

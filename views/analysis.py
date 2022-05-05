@@ -9,13 +9,21 @@ from database_functions import *
 from audio_processing import convert_video_to_audio
 from coherence_assessment import coherence_scoring
 from speech_to_text import short_speech_to_text
-def load_view():
+def load_view(comp_id):
     FER_score = 0
     tone_score = 0
+    fluency_score = 0
     coherence_score = 0
+    overall_score = 0
     fer_weight = 0
     tone_weight = 0
+    fluency_weight =0
     coherence_weight = 0
+    FER_matrix = {}
+    tone_matrix = {}
+    fluency_matrix = {}
+    
+    
     with st.sidebar:
         st.title("Analysis")
         selections = st.multiselect('Select what you want to analyze', ["Facial Analysis", "Tone Analysis", "English Text Coherence"])
@@ -27,6 +35,7 @@ def load_view():
             if "English Text Coherence" in selections:
                 coherence_weight = st.slider('English coherence weight', 0, 100, 50)
         reportBx = st.checkbox("Generate detailed report")
+        addAnalysisBx = st.checkbox("Add Analysis results to database")
     
     ######################## Database Management ############################
     curr_cand_id = st.text_input("Ender your candidate National ID")
@@ -54,9 +63,9 @@ def load_view():
     
     col_11, col_12 = st.columns(2)           
     with st.form('add_analysis'):
-        job_id = col_11.text_input("Enter job ID", value=1)
-        curr_job_data = get_job(job_id)
-        job_title = col_12.text_input("Job Title", value=curr_job_data[0][1], disabled=True)
+        available_jobs = [job[0] for job in get_jobs_comp(comp_id)]
+        
+        job_title = col_11.selectbox("Choose job for analysis", available_jobs)
         ques_number = col_11.number_input('Question No.', 0, 10)   
         interview_number = col_12.number_input('Interview No.', 0, 10)
     #################################################################################################
@@ -83,14 +92,16 @@ def load_view():
                 with st.spinner("Facial expressions are being analyzed"):
                     FER_score, FER_matrix, FER_weights = analyze_face(video_path)
                 st.write(f'The score based on face expression analysis is: {FER_score}')
-                st.progress(FER_score/10)
+                st.progress(FER_score/100)
+                overall_score = FER_score
                 
             if "Tone Analysis" in selections:
                 st.header("Tone")
                 with st.spinner("Tone expressions are being analyzed"):
                     tone_score, tone_matrix, tone_weights = analyze_tone(audio_path)
                 st.write(f'The score based on tone analysis is: {tone_score}')
-                st.progress(tone_score/10)
+                st.progress(tone_score/100)
+                overall_score = tone_score
 
             if "English Text Coherence" in selections:
                 st.header("English")
@@ -99,11 +110,12 @@ def load_view():
                     coherence_score = coherence_scoring(text)
                     st.write(f'The Coherence percentage of English text: {round(coherence_score*100,2)}%')
                     st.progress(coherence_score)
+                    overall_score = coherence_score*100
             if len(selections)>1:
-                overall_score = ((0.1*fer_weight*FER_score)+(0.1*tone_weight*tone_score)+(coherence_weight*coherence_score))/(0.1*fer_weight+0.1*tone_weight+0.1*coherence_weight)
+                overall_score = ((0.01*fer_weight*FER_score)+(0.01*tone_weight*tone_score)+(coherence_weight*coherence_score))/(0.01*fer_weight+0.01*tone_weight+0.01*coherence_weight)
                 st.header("Overall score")
-                st.write(f'{round(overall_score*10,2)}%')
-                st.progress(overall_score/10)
+                st.write(f'{round(overall_score,2)}%')
+                st.progress(overall_score/100)
             
         else:
             st.write("ERROR: No video found, please select a video and try again!")
@@ -112,24 +124,24 @@ def load_view():
         try:
             with st.expander("Show a report"):
                 st.header("Average scores of expressions")
-                st.write(f'angry: {round(FER_weights[0],2)*100}%')
-                st.progress(FER_weights[0])
+                st.write(f'angry: {round(100*FER_weights[0],2)}%')
+                st.progress(float(FER_weights[0]))
                 st.write(f'disgust: {round(100*FER_weights[1],2)}%')
-                st.progress(FER_weights[1])
+                st.progress(float(FER_weights[1]))
                 st.write(f'fear: {round(100*FER_weights[2],2)}%')
-                st.progress(FER_weights[2])
+                st.progress(float(FER_weights[2]))
                 st.write(f'happy: {round(100*FER_weights[3],2)}%')
-                st.progress(FER_weights[3])
+                st.progress(float(FER_weights[3]))
                 st.write(f'neutral: {round(100*FER_weights[4],2)}%')
-                st.progress(FER_weights[4])
+                st.progress(float(FER_weights[4]))
                 st.write(f'sad: {round(100*FER_weights[5],2)}%')
-                st.progress(FER_weights[5])
+                st.progress(float(FER_weights[5]))
                 st.write(f'surprise: {round(100*FER_weights[6],2)}%')
-                st.progress(FER_weights[6])
+                st.progress(float(FER_weights[6]))
 
                 st.header("Detailed report")
                 df = pd.DataFrame(
-                FER_matrix,
+                np.array(list(FER_matrix.values())),
                 columns=(['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']))
                 st.dataframe(100*df)
 
@@ -137,13 +149,10 @@ def load_view():
             st.info("Report will be shown after analysis")
     
     
-    addAnalysisBtn = st.button("Add to Dataset")
-    if addAnalysisBtn:
+    if addAnalysisBx:
         if curr_cand_data:
-            st.write(curr_cand_id)
-        else:
-            st.write(cand_id)
-        st.write(job_id)
-        st.write(ques_number)
-        st.write(interview_number)
-        #add_analysis()
+            cand_id = curr_cand_id
+        if overall_score:
+            add_analysis(cand_id, comp_id, job_title, interview_number, ques_number, str(FER_matrix),\
+                FER_score, str(tone_matrix), tone_score, str(fluency_matrix), fluency_score,\
+                coherence_score, overall_score)

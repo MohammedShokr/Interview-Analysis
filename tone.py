@@ -97,17 +97,17 @@ def analyze_audio(audio_path):
 
 
 def analyze_audio_segments(segments_folder_path, wav_num):
-    expression_matrix = []
+    expression_matrix = {}
     for i in range(0, wav_num):
         audio_path = f'{segments_folder_path}/wav_{i+1}.wav'
         prediction = analyze_audio(audio_path)
-        expression_matrix.append(prediction)
+        expression_matrix[i]=prediction
     return expression_matrix
 
 
 def analyze_tone(audio_file):
     wav_num = divide_audio(audio_file, "./tone_analysis/seg_result") #CHANGE PATH TO: "./tone_analysis/seg_result"
     expression_matrix = analyze_audio_segments("./tone_analysis/seg_result", wav_num) #CHANGE PATH TO: "./tone_analysis/seg_result"
-    expression_weights = np.mean(expression_matrix, axis=0).tolist()
+    expression_weights = np.mean(np.array(list(expression_matrix.values())), axis=0)
     score = scoring_expression(expression_weights)
-    return score, expression_matrix, expression_weights
+    return score*10, expression_matrix, expression_weights

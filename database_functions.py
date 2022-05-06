@@ -84,19 +84,9 @@ def delete_analysis_cand_job(cand_ID, comp_ID, job_title):
     c.execute('''DELETE FROM analysis WHERE cand_ID=? AND comp_ID=? AND job_title=?
               ''', (cand_ID, comp_ID, job_title))
     conn.commit()
-    
-def view_analysis_data():
-    c.execute('SELECT * FROM analysis')
-    data = c.fetchall()
-    return data
 
 def view_company_data():
     c.execute('SELECT * FROM company')
-    data = c.fetchall()
-    return data
-
-def view_job_data():
-    c.execute('SELECT * FROM job')
     data = c.fetchall()
     return data
 
@@ -119,13 +109,18 @@ def get_jobs_comp(comp_id):
     data = c.fetchall()
     return data
 
+def get_analysis_comp(comp_id):
+    c.execute('SELECT * FROM analysis WHERE comp_ID="{}"'.format(comp_id))
+    data = c.fetchall()
+    return data
+
 def get_analysis_with_job(comp_id, job_title):
     c.execute('SELECT * FROM analysis WHERE comp_ID=? AND job_title=?',(comp_id, job_title))
     data = c.fetchall()
     return data
 
-def get_analysis_with_cand(cand_id):
-    c.execute('SELECT * FROM analysis WHERE cand_ID="{}"'.format(cand_id))
+def get_analysis_with_cand(comp_id, cand_id):
+    c.execute('SELECT * FROM analysis WHERE comp_ID=? AND cand_ID=?',(comp_id, cand_id))
     data = c.fetchall()
     return data
 

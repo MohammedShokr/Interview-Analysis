@@ -1,4 +1,6 @@
 import streamlit as st
+import pandas as pd
+import seaborn as sns
 from Queries import *
 
 # Get the top candidates in a certain job
@@ -35,8 +37,9 @@ def load_view(comp_id):
         intv1 = st.number_input("First candidate Interview No.", 1, 10)
         cand2 = st.text_input("Second candidate's National ID")
         intv2 = st.number_input("Second candidate Interview No.", 1, 10)
+    with col4_2:  
         cand1_df, cand2_df = compare_two_cands(comp_id, job_title, cand1, cand2, intv1, intv2, metric)
-    with col4_2:
         st.dataframe(cand1_df)
         st.dataframe(cand2_df)
         
+    

@@ -5,6 +5,7 @@ c = conn.cursor()
 
 
 def create_tables():
+    c.execute("DROP TABLE analysis")
     c.execute('''CREATE TABLE IF NOT EXISTS company
                (
                 comp_ID     text    PRIMARY KEY,
@@ -37,7 +38,7 @@ def create_tables():
                 FER                 text,
                 FER_score           real,
                 tone                text,
-                tone_score          text,
+                tone_score          real, 
                 fluency             text,
                 fluency_score       real,
                 coherence_score     real,

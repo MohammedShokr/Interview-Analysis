@@ -60,8 +60,9 @@ def navigation():
         utl.inject_custom_css()
         utl.navbar_component()
 
-        st.write(f'Welcome {logged_in[1]}!!')
-        but3 = st.button("Logout")
+        col1, col2, col3 = st.columns((10,2,1))
+        col2.write(f'Welcome {logged_in[1]}!!')
+        but3 = col3.button("Logout")
         if but3:
             with open("vars.txt", "w") as f2:
                 f2.writelines(f'{0}\n{"blabla"}')

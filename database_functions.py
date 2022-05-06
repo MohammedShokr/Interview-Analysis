@@ -5,7 +5,6 @@ c = conn.cursor()
 
 
 def create_tables():
-    c.execute("DROP TABLE analysis")
     c.execute('''CREATE TABLE IF NOT EXISTS company
                (
                 comp_ID     text    PRIMARY KEY,

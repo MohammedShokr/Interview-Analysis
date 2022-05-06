@@ -12,13 +12,15 @@ def load_view(comp_id):
     col1_spacer1, col1, col1_spacer2 = st.columns((.2, 7.1, .2))
     with col1:
         st.subheader('Top 10 candidates in a Job')
+    
     col2_spacer1, col2_1, col2_spacer2, col2_2, col2_spacer3  = st.columns((.2, 2.3, .4, 4.4, .2))
     with col2_1:
+        st.markdown('More details can be witten here')
         job_title = st.selectbox("Choose job for analysis", available_jobs) 
         metric = st.selectbox("Choose metic used for comparison", metrics)   
 
     with col2_2:
-        top_cands_df = get_top_cands_job_overall_score(comp_id, job_title, metric)
+        top_cands_df = get_top_cands_job(comp_id, job_title, metric)
         st.dataframe(top_cands_df)
         st.bar_chart(top_cands_df[metric])
         

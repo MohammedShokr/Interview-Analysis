@@ -14,8 +14,9 @@ def get_top_cands_job(comp_id, job_title, metric):
     ranked_candidates = df[["cand_ID", "interview_no", metric]]\
                         .groupby(["cand_ID", "interview_no"]).mean()
     ranked_candidates.reset_index(inplace=True)
-    ranked_candidates = ranked_candidates.sort_values("interview_no").groupby("cand_ID").tail(1)
-    ranked_candidates = ranked_candidates.sort_values(by= metric, ascending=False).head(10)
+    if not ranked_candidates.empty:
+        ranked_candidates = ranked_candidates.sort_values("interview_no").groupby("cand_ID").tail(1)
+        ranked_candidates = ranked_candidates.sort_values(by= metric, ascending=False).head(10)
     return ranked_candidates
 
 

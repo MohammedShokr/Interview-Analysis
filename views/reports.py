@@ -151,27 +151,30 @@ def load_view(comp_id):
         # Average overall score in all interviews
         avg_overall_score_df = cand_analysis_df[["job_title", "interview_no", "overall_score"]]\
                         .groupby(["job_title", "interview_no"]).mean()
-        avg_overall = round(avg_overall_score_df['overall_score'].mean(),2)
-        col_ind3.metric("Acheived Average Overall Score", f'{avg_overall} %')
+
+        if not cand_analysis_df.empty:
+            avg_overall = round(avg_overall_score_df['overall_score'].mean(),2)
+            col_ind3.metric("Acheived Average Overall Score", f'{avg_overall} %')
         
         st.subheader("Highest Achieved Scores")
         col_ind4, col_ind5, col_ind6, col_ind7 = st.columns(4)
-        # Best FER score
-        best_fer_score = cand_analysis_df[["job_title", "interview_no", "FER_score"]]\
-                        .groupby(["job_title", "interview_no"]).max()["FER_score"][0]
-        col_ind4.metric("Facial Expression Analysis", f'{best_fer_score} %')
-        # Best tone score
-        best_tone_score = cand_analysis_df[["job_title", "interview_no", "tone_score"]]\
-                        .groupby(["job_title", "interview_no"]).max()["tone_score"][0]
-        col_ind5.metric("Tone Analysis", f'{best_tone_score} %')
-        # Best fluency score
-        best_fluency_score = cand_analysis_df[["job_title", "interview_no", "fluency_score"]]\
-                        .groupby(["job_title", "interview_no"]).max()["fluency_score"][0]
-        col_ind6.metric("English Fluency Analysis", f'{best_fluency_score} %')
-        # Best coherence score
-        best_coherence_score = cand_analysis_df[["job_title", "interview_no", "coherence_score"]]\
-                        .groupby(["job_title", "interview_no"]).max()["coherence_score"][0]
-        col_ind7.metric("Topic Coherence Analysis", f'{round(100*best_coherence_score,2)} %')
+        if not cand_analysis_df.empty:
+            # Best FER score
+            best_fer_score = cand_analysis_df[["job_title", "interview_no", "FER_score"]]\
+                            .groupby(["job_title", "interview_no"]).max()["FER_score"][0]
+            col_ind4.metric("Facial Expression Analysis", f'{best_fer_score} %')
+            # Best tone score
+            best_tone_score = cand_analysis_df[["job_title", "interview_no", "tone_score"]]\
+                            .groupby(["job_title", "interview_no"]).max()["tone_score"][0]
+            col_ind5.metric("Tone Analysis", f'{best_tone_score} %')
+            # Best fluency score
+            best_fluency_score = cand_analysis_df[["job_title", "interview_no", "fluency_score"]]\
+                            .groupby(["job_title", "interview_no"]).max()["fluency_score"][0]
+            col_ind6.metric("English Fluency Analysis", f'{best_fluency_score} %')
+            # Best coherence score
+            best_coherence_score = cand_analysis_df[["job_title", "interview_no", "coherence_score"]]\
+                            .groupby(["job_title", "interview_no"]).max()["coherence_score"][0]
+            col_ind7.metric("Topic Coherence Analysis", f'{round(100*best_coherence_score,2)} %')
         
         #For a single analysis video
         col9_spacer1, col9, col9_spacer2 = st.columns((.2, 7.1, .2))
@@ -187,9 +190,11 @@ def load_view(comp_id):
                             (cand_analysis_df["interview_no"]==cand_interview_no)]["question_no"]
             ques_no = st.selectbox("Select Question no.", list(cand_questions))
         with col10_2:
-
-            cand_analysis = pd.DataFrame(get_one_analysis(comp_id, cand_job_title, candindate_ID, int(cand_interview_no), ques_no), columns=analysis_cols)
+            if cand_interview_no: cand_interview_no = int(cand_interview_no)
+            cand_analysis = pd.DataFrame(get_one_analysis(comp_id, cand_job_title, candindate_ID, cand_interview_no, ques_no), columns=analysis_cols)
             st.dataframe(cand_analysis)
+            
+        if not cand_analysis.empty:
             FER_matrix = list(eval(cand_analysis["FER"][0]).values())
             tone_matrix = list(eval(cand_analysis["tone"][0]).values())
             fluency_matrix = list(eval(cand_analysis["fluency"][0]).values())
@@ -197,7 +202,7 @@ def load_view(comp_id):
             FER_weights = np.mean(np.array(FER_matrix), axis=0)
             st.write(FER_matrix[0:5])
             st.dataframe(tone_matrix)
-        progressbar_FER_weights(FER_weights)
+            progressbar_FER_weights(FER_weights)
             
         
         # st.header("Average scores of expressions")

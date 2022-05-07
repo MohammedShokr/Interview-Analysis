@@ -101,7 +101,7 @@ def analyze_audio_segments(segments_folder_path, wav_num):
     for i in range(0, wav_num):
         audio_path = f'{segments_folder_path}/wav_{i+1}.wav'
         prediction = analyze_audio(audio_path)
-        expression_matrix[i]=prediction
+        expression_matrix[i]=list(prediction)
     return expression_matrix
 
 

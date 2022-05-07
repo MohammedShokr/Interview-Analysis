@@ -1,0 +1,9 @@
+[theme]
+base="light"
+primaryColor="#435264"
+
+
+[theme]
+base="dark"
+primaryColor="#accede"
+secondaryBackgroundColor="#4f5164"

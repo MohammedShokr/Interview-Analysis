@@ -59,6 +59,7 @@ def navigation():
         st.set_option('deprecation.showPyplotGlobalUse', False)
         utl.inject_custom_css()
         utl.navbar_component()
+        utl.hide_row_index_css()
 
         col1, col2, col3 = st.columns((10,2,1))
         col2.write(f'Welcome {logged_in[1]}!!')

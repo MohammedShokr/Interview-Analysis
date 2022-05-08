@@ -25,7 +25,7 @@ def create_tables():
                (
                 cand_ID             real    PRIMARY KEY,
                 cand_name           text,
-                cand_qualifications text
+                cand_qualifications text,
                 )''')
     c.execute('''CREATE TABLE IF NOT EXISTS analysis
                (
@@ -47,24 +47,75 @@ def create_tables():
                 )''')
     conn.commit()
 
-def add_analysis(cand_ID, comp_ID, job_title, interview_no, question_no, FER , FER_score, tone, tone_score, fluency, fluency_score, coherence_score, overall_score):
-    c.execute('''INSERT INTO analysis(cand_ID, comp_ID, job_title, interview_no, question_no, FER , FER_score, tone, tone_score, fluency, fluency_score, coherence_score, overall_score)
-                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)''', (cand_ID, comp_ID, job_title, interview_no, question_no, FER , FER_score, tone, tone_score, fluency, fluency_score, coherence_score, overall_score))
-    conn.commit()
+def view_schema():
+    c.execute("SELECT name FROM sqlite_master WHERE type='table';")
+    return c.fetchall()
+
+### Company table related functions ###
+def view_company_data():
+    c.execute('SELECT * FROM company')
+    data = c.fetchall()
+    return data
 
 def add_company(comp_ID, comp_name, comp_pass, website):
     c.execute('''INSERT INTO company(comp_ID, comp_name, comp_pass, website)
                  VALUES (?,?,?,?)''', (comp_ID, comp_name, comp_pass, website))
     conn.commit()
 
+def get_company(comp_id):
+    c.execute('SELECT * FROM company WHERE comp_ID="{}"'.format(comp_id))
+    data = c.fetchall()
+    return data
+    
+### Jobs table related functions ####
 def add_job(job_title, job_req, job_description, comp_ID):
     c.execute('''INSERT INTO job(job_title, job_req, job_description, comp_ID)
                  VALUES (?,?,?,?)''', (job_title, job_req, job_description, comp_ID))
     conn.commit()
 
+def get_job(job_title, comp_id):
+    c.execute('SELECT * FROM job WHERE job_title=? AND comp_ID=?', (job_title, comp_id))
+    data = c.fetchall()
+    return data
+
+def get_jobs_comp(comp_id):
+    c.execute('SELECT * FROM job WHERE comp_ID="{}"'.format(comp_id))
+    data = c.fetchall()
+    return data
+
+def update_job(job_title, comp_id, job_req, job_description):
+    c.execute('UPDATE job SET job_req=?, job_description=? WHERE job_title=? AND comp_ID=?',\
+                (job_req, job_description, job_title, comp_id))
+    conn.commit()
+    data = c.fetchall()
+    return data
+
+def delete_job(job_title, comp_id):
+    c.execute('''DELETE FROM job WHERE job_title=? AND comp_ID=?''',\
+        (job_title, comp_id))
+    conn.commit()
+
+### Candidate table related functions ####
+def view_candidate_data():
+    c.execute('SELECT * FROM candidate')
+    data = c.fetchall()
+    return data
+
+def get_cand(cand_id):
+    c.execute('SELECT * FROM candidate WHERE cand_id="{}"'.format(cand_id))
+    data = c.fetchall()
+    return data
+
 def add_candidate(cand_ID, cand_name, cand_qualifications):
     c.execute('''INSERT INTO candidate(cand_ID, cand_name, cand_qualifications)
                  VALUES (?,?,?)''', (cand_ID, cand_name, cand_qualifications))
+    conn.commit()
+    
+### Analysis table related functions ###
+
+def add_analysis(cand_ID, comp_ID, job_title, interview_no, question_no, FER , FER_score, tone, tone_score, fluency, fluency_score, coherence_score, overall_score):
+    c.execute('''INSERT INTO analysis(cand_ID, comp_ID, job_title, interview_no, question_no, FER , FER_score, tone, tone_score, fluency, fluency_score, coherence_score, overall_score)
+                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)''', (cand_ID, comp_ID, job_title, interview_no, question_no, FER , FER_score, tone, tone_score, fluency, fluency_score, coherence_score, overall_score))
     conn.commit()
 
 def delete_one_analysis(cand_ID, comp_ID, job_title, interview_no, question_no):
@@ -84,38 +135,6 @@ def delete_analysis_cand_job(cand_ID, comp_ID, job_title):
     c.execute('''DELETE FROM analysis WHERE cand_ID=? AND comp_ID=? AND job_title=?
               ''', (cand_ID, comp_ID, job_title))
     conn.commit()
-
-def view_company_data():
-    c.execute('SELECT * FROM company')
-    data = c.fetchall()
-    return data
-
-def get_company(comp_id):
-    c.execute('SELECT * FROM company WHERE comp_ID="{}"'.format(comp_id))
-    data = c.fetchall()
-    return data
-    
-
-def view_candidate_data():
-    c.execute('SELECT * FROM candidate')
-    data = c.fetchall()
-    return data
-
-def view_schema():
-    c.execute("SELECT name FROM sqlite_master WHERE type='table';")
-    return c.fetchall()
-
-def get_cand(cand_id):
-	c.execute('SELECT * FROM candidate WHERE cand_id="{}"'.format(cand_id))
-	data = c.fetchall()
-	return data
-
-####################################
-# Simple query functions
-def get_jobs_comp(comp_id):
-    c.execute('SELECT * FROM job WHERE comp_ID="{}"'.format(comp_id))
-    data = c.fetchall()
-    return data
 
 def get_analysis_comp(comp_id):
     c.execute('SELECT * FROM analysis WHERE comp_ID="{}"'.format(comp_id))

@@ -5,6 +5,7 @@ import numpy as np
 import io
 from FER import analyze_face
 from tone import analyze_tone
+from fluency_analysis import analyze_fluency
 from database_functions import *
 from audio_processing import convert_video_to_audio
 from coherence_assessment import coherence_scoring
@@ -26,12 +27,14 @@ def load_view(comp_id):
     
     with st.sidebar:
         st.title("Analysis")
-        selections = st.multiselect('Select what you want to analyze', ["Facial Analysis", "Tone Analysis", "English Text Coherence"])
+        selections = st.multiselect('Select what you want to analyze', ["Facial Analysis", "Tone Analysis", "English Text Coherence", "English Fluency Analysis"])
         if len(selections)>1:
             if "Facial Analysis" in selections:
                 fer_weight = st.slider('FER weight', 0, 100, 50)
             if "Tone Analysis" in selections:
                 tone_weight = st.slider('Tone analysis weight', 0, 100, 50)
+            if "English Fluency Analysis" in selections:
+                fluency_weight = st.slider('Fluency analysis weight', 0, 100, 50)
             if "English Text Coherence" in selections:
                 coherence_weight = st.slider('English coherence weight', 0, 100, 50)
         reportBx = st.checkbox("Generate detailed report")
@@ -102,6 +105,14 @@ def load_view(comp_id):
                 st.write(f'The score based on tone analysis is: {tone_score}')
                 st.progress(tone_score/100)
                 overall_score = tone_score
+                
+            if "English Fluency Analysis" in selections:
+                st.header("Fluency")
+                with st.spinner("English Fluency is being analyzed"):
+                    fluency_score, fluency_matrix, fluency_weights = analyze_fluency(audio_path)
+                st.write(f'The score based on fluency analysis is: {fluency_score}')
+                st.progress(fluency_score/100)
+                overall_score = fluency_score
 
             if "English Text Coherence" in selections:
                 st.header("English")

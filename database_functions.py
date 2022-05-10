@@ -23,7 +23,7 @@ def create_tables():
                 )''')
     c.execute('''CREATE TABLE IF NOT EXISTS candidate
                (
-                cand_ID             real    PRIMARY KEY,
+                cand_ID             text    PRIMARY KEY,
                 cand_name           text,
                 cand_qualifications text,
                 )''')
@@ -111,6 +111,13 @@ def add_candidate(cand_ID, cand_name, cand_qualifications):
                  VALUES (?,?,?)''', (cand_ID, cand_name, cand_qualifications))
     conn.commit()
     
+def update_cand(cand_ID, cand_name, cand_qualifications):
+    c.execute('UPDATE candidate SET cand_name=?, cand_qualifications=? WHERE cand_ID=?',\
+                (cand_name, cand_qualifications, cand_ID))
+    conn.commit()
+    data = c.fetchall()
+    return data
+
 ### Analysis table related functions ###
 
 def add_analysis(cand_ID, comp_ID, job_title, interview_no, question_no, FER , FER_score, tone, tone_score, fluency, fluency_score, coherence_score, overall_score):

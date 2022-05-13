@@ -124,6 +124,15 @@ def add_analysis(cand_ID, comp_ID, job_title, interview_no, question_no, FER , F
     c.execute('''INSERT INTO analysis(cand_ID, comp_ID, job_title, interview_no, question_no, FER , FER_score, tone, tone_score, fluency, fluency_score, coherence_score, overall_score)
                  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)''', (cand_ID, comp_ID, job_title, interview_no, question_no, FER , FER_score, tone, tone_score, fluency, fluency_score, coherence_score, overall_score))
     conn.commit()
+    
+def update_analysis(cand_ID, comp_ID, job_title, interview_no, question_no, FER , FER_score, tone, tone_score, fluency, fluency_score, coherence_score, overall_score):
+    c.execute('''UPDATE analysis SET FER=? , FER_score=?, tone=?, tone_score=?, fluency=?, fluency_score=?,
+                coherence_score=?, overall_score=? WHERE cand_ID=? AND comp_ID=? AND job_title=? AND
+                interview_no=? question_no=?''', (FER , FER_score, tone, tone_score, fluency, fluency_score,\
+                coherence_score, overall_score, cand_ID, comp_ID, job_title, interview_no, question_no))
+    conn.commit()
+    data = c.fetchall()
+    return data
 
 def delete_one_analysis(cand_ID, comp_ID, job_title, interview_no, question_no):
     c.execute('''DELETE FROM analysis WHERE cand_ID=? AND comp_ID=? AND job_title=? AND 

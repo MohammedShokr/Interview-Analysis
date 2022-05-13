@@ -9,3 +9,4 @@ comp2-pass2
 comp10-pass10
 comp20-pass20
 comp1-test
+0-pass

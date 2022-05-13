@@ -89,11 +89,11 @@ def load_view(comp_id):
         
         col19, col20, col21 = st.columns((8,3,7))
         if col20.button("Edit Candidate"):
-            update_cand(candidate_id, candidate_name, candidate_qual)
+            update_cand(candidate_id_edit, candidate_name_edit, candidate_qual_edit)
             st.success("The candidate details has been successfully updated")
         with st.expander("View all candidate"):
             colex4, colex5, colex6 = st.columns((1,10,1))
-            cands_df = pd.DataFrame(view_candidate_data(), columns=[cand_cols])
+            cands_df = pd.DataFrame(view_candidate_data(), columns=cand_cols)
             colex5.dataframe(cands_df)        
     elif choice == "Manage Analysis Data":
         st.subheader("Edit Analysis data")

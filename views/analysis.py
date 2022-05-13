@@ -132,13 +132,15 @@ def load_view(comp_id):
                 if curr_cand_data:
                     cand_id = curr_cand_id
                 if get_one_analysis(comp_id, job_title, cand_id, interview_number, ques_number):
-                    delete_one_analysis(comp_id, job_title, cand_id, interview_number, ques_number)
+                    update_analysis(cand_id, comp_id, job_title, interview_number, ques_number, str(FER_matrix),\
+                        FER_score, str(tone_matrix), tone_score, str(fluency_matrix), fluency_score,\
+                        coherence_score, overall_score)
                     st.info("This analysis entry has been updated in the database")
                 else:
-                    st.info("This analysis enty has been added to the database")
-                add_analysis(cand_id, comp_id, job_title, interview_number, ques_number, str(FER_matrix),\
-                    FER_score, str(tone_matrix), tone_score, str(fluency_matrix), fluency_score,\
-                    coherence_score, overall_score)
+                    st.info("This analysis entry has been added to the database")
+                    add_analysis(cand_id, comp_id, job_title, interview_number, ques_number, str(FER_matrix),\
+                        FER_score, str(tone_matrix), tone_score, str(fluency_matrix), fluency_score,\
+                        coherence_score, overall_score)
                     
         else:
             st.write("ERROR: No video found, please select a video and try again!")

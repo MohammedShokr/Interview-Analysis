@@ -174,8 +174,13 @@ def get_analysis_with_job_cand(comp_id, job_title, cand_id, interview_no):
     return data
 
 def get_one_analysis(comp_ID, job_title, cand_ID, interview_no, question_no):
-    c.execute('''SELECT * FROM analysis WHERE cand_ID=? AND comp_ID=? AND job_title=? AND 
-              interview_no=? AND question_no=?''', (cand_ID, comp_ID, job_title, interview_no, question_no))
+    c.execute('''SELECT * FROM analysis WHERE comp_ID=? AND job_title=? AND cand_ID=? AND 
+              interview_no=? AND question_no=?''', (comp_ID, job_title, cand_ID, interview_no, question_no))
+    data = c.fetchall()
+    return data
+
+def view_analysis_data():
+    c.execute('SELECT * FROM analysis')
     data = c.fetchall()
     return data
     

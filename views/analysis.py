@@ -88,7 +88,7 @@ def load_view(comp_id):
         analyzeBtn = st.button('Analyze')
     if analyzeBtn:
         if uploaded_file:
-            if "Tone Analysis" or "English Text Coherence" in selections:
+            if "Tone Analysis" or "English Text Coherence" or "English Fluency Analysis"in selections:
                 audio_path = convert_video_to_audio(video_path)
             if "Facial Analysis" in selections:
                 st.header("FER")
@@ -123,7 +123,9 @@ def load_view(comp_id):
                     st.progress(coherence_score)
                     overall_score = coherence_score*100
             if len(selections)>1:
-                overall_score = ((0.01*fer_weight*FER_score)+(0.01*tone_weight*tone_score)+(coherence_weight*coherence_score))/(0.01*fer_weight+0.01*tone_weight+0.01*coherence_weight)
+                overall_score = ((0.01*fer_weight*FER_score)+(0.01*tone_weight*tone_score)+\
+                    (0.01*fluency_weight*fluency_score)+(coherence_weight*coherence_score))/\
+                    (0.01*fer_weight+0.01*tone_weight+0.01*fluency_weight+0.01*coherence_weight)
                 st.header("Overall score")
                 st.write(f'{round(overall_score,2)}%')
                 st.progress(overall_score/100)

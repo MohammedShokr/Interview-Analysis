@@ -55,6 +55,6 @@ cols = ["cand_ID", "comp_ID", "job_title",\
 
 
 #add_analysis(cand_ID, comp_ID, job_title, interview_no, question_no, FER , FER_score, tone, tone_score, fluency, fluency_score, coherence_score, overall_score)
-print(view_company_data())
+print(get_one_analysis("comp1", "CV Engineer", "1", 1, 4))
 
 

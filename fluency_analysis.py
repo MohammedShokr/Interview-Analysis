@@ -55,23 +55,23 @@ def scoring_expression(expression_weights):
     low = expression_weights[0]
     if low < 0.1:
         score += 10
-    elif low < 0.3:
-        score += 5
     elif low < 0.5:
+        score += 5
+    elif low < 0.8:
         score += 1
     intermediate = expression_weights[1]
     if intermediate < 0.1:
         score += 1
-    elif intermediate < 0.3:
-        score += 5
     elif intermediate < 0.5:
+        score += 5
+    elif intermediate < 0.8:
         score += 10
     high = expression_weights[2]
     if high < 0.1:
         score += 1
-    elif high < 0.3:
+    elif high < 0.5:
         score += 5
-    elif high < 0.7:
+    elif high < 0.8:
         score += 10
     return round(score/3, 2)
 

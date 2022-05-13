@@ -50,28 +50,28 @@ def analyze_audio(audio_path):
     predict_test = model.predict(extracted_feature)
     return list(predict_test[0])
 
-def scoring_expression(expression_weights):
+def scoring_fluency_expressions(expression_weights):
     score = 0
     low = expression_weights[0]
     if low < 0.1:
         score += 10
-    elif low < 0.5:
+    elif low < 0.3:
         score += 5
-    elif low < 0.8:
+    elif low < 0.5:
         score += 1
     intermediate = expression_weights[1]
     if intermediate < 0.1:
         score += 1
-    elif intermediate < 0.5:
+    elif intermediate < 0.3:
         score += 5
-    elif intermediate < 0.8:
+    elif intermediate < 0.5:
         score += 10
     high = expression_weights[2]
     if high < 0.1:
         score += 1
-    elif high < 0.5:
+    elif high < 0.3:
         score += 5
-    elif high < 0.8:
+    elif high < 0.7:
         score += 10
     return round(score/3, 2)
 
@@ -87,7 +87,7 @@ def analyze_fluency(audio_file):
     wav_num = divide_audio(audio_file, "./fluency_analysis/seg_result") #CHANGE PATH TO: "./tone_analysis/seg_result"
     expression_matrix = analyze_audio_segments("./fluency_analysis/seg_result", wav_num) #CHANGE PATH TO: "./tone_analysis/seg_result"
     expression_weights = np.mean(np.array(list(expression_matrix.values())), axis=0)
-    score = scoring_expression(expression_weights)
+    score = scoring_fluency_expressions(expression_weights)
     return score*10, expression_matrix, expression_weights
 
 #print(analyze_fluency("./fluency_analysis/seg_result/wav_1.wav"))

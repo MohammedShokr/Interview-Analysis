@@ -6,7 +6,7 @@ import numpy as np
 from audio_processing import *
 
 
-def scoring_expression(expression_weights):
+def scoring_tone_expressions(expression_weights):
     score = 0
     angry = expression_weights[0]
     if angry < 0.1:
@@ -109,5 +109,5 @@ def analyze_tone(audio_file):
     wav_num = divide_audio(audio_file, "./tone_analysis/seg_result") #CHANGE PATH TO: "./tone_analysis/seg_result"
     expression_matrix = analyze_audio_segments("./tone_analysis/seg_result", wav_num) #CHANGE PATH TO: "./tone_analysis/seg_result"
     expression_weights = np.mean(np.array(list(expression_matrix.values())), axis=0)
-    score = scoring_expression(expression_weights)
+    score = scoring_tone_expressions(expression_weights)
     return score*10, expression_matrix, expression_weights

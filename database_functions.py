@@ -1,5 +1,5 @@
 import sqlite3
-conn = sqlite3.connect('database.db', check_same_thread=False)
+conn = sqlite3.connect('database_final.db', check_same_thread=False)
 conn.execute('PRAGMA foreign_keys = 3')
 c = conn.cursor()
 
@@ -25,7 +25,7 @@ def create_tables():
                (
                 cand_ID             text    PRIMARY KEY,
                 cand_name           text,
-                cand_qualifications text,
+                cand_qualifications text
                 )''')
     c.execute('''CREATE TABLE IF NOT EXISTS analysis
                (
@@ -42,6 +42,7 @@ def create_tables():
                 fluency_score       real,
                 coherence_score     real,
                 overall_score       real,
+                PRIMARY KEY (cand_ID, comp_ID, job_title, interview_no, question_no)
                 FOREIGN KEY (cand_ID) REFERENCES candidate (cand_ID),
                 FOREIGN KEY (comp_ID,job_title) REFERENCES job (comp_ID,job_title)
                 )''')
@@ -51,11 +52,20 @@ def view_schema():
     c.execute("SELECT name FROM sqlite_master WHERE type='table';")
     return c.fetchall()
 
+def delete_table(table_name):
+    c.execute('DROP TABLE "{}"'.format(table_name))
+    conn.commit()
 ### Company table related functions ###
 def view_company_data():
     c.execute('SELECT * FROM company')
     data = c.fetchall()
     return data
+
+def get_company_IDs():
+    c.execute('SELECT comp_ID FROM company')
+    data = c.fetchall()
+    return data
+
 
 def add_company(comp_ID, comp_name, comp_pass, website):
     c.execute('''INSERT INTO company(comp_ID, comp_name, comp_pass, website)
@@ -68,6 +78,10 @@ def get_company(comp_id):
     return data
     
 ### Jobs table related functions ####
+def view_jobs():
+    c.execute('SELECT * FROM job')
+    data = c.fetchall()
+    return data
 def add_job(job_title, job_req, job_description, comp_ID):
     c.execute('''INSERT INTO job(job_title, job_req, job_description, comp_ID)
                  VALUES (?,?,?,?)''', (job_title, job_req, job_description, comp_ID))
@@ -111,28 +125,16 @@ def add_candidate(cand_ID, cand_name, cand_qualifications):
                  VALUES (?,?,?)''', (cand_ID, cand_name, cand_qualifications))
     conn.commit()
     
-def update_cand(cand_ID, cand_name, cand_qualifications):
-    c.execute('UPDATE candidate SET cand_name=?, cand_qualifications=? WHERE cand_ID=?',\
-                (cand_name, cand_qualifications, cand_ID))
-    conn.commit()
+### Analysis table related functions ###
+def view_analysis_data():
+    c.execute('SELECT * FROM analysis')
     data = c.fetchall()
     return data
-
-### Analysis table related functions ###
 
 def add_analysis(cand_ID, comp_ID, job_title, interview_no, question_no, FER , FER_score, tone, tone_score, fluency, fluency_score, coherence_score, overall_score):
     c.execute('''INSERT INTO analysis(cand_ID, comp_ID, job_title, interview_no, question_no, FER , FER_score, tone, tone_score, fluency, fluency_score, coherence_score, overall_score)
                  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)''', (cand_ID, comp_ID, job_title, interview_no, question_no, FER , FER_score, tone, tone_score, fluency, fluency_score, coherence_score, overall_score))
     conn.commit()
-    
-def update_analysis(cand_ID, comp_ID, job_title, interview_no, question_no, FER , FER_score, tone, tone_score, fluency, fluency_score, coherence_score, overall_score):
-    c.execute('''UPDATE analysis SET FER=? , FER_score=?, tone=?, tone_score=?, fluency=?, fluency_score=?,
-                coherence_score=?, overall_score=? WHERE cand_ID=? AND comp_ID=? AND job_title=? AND
-                interview_no=? question_no=?''', (FER , FER_score, tone, tone_score, fluency, fluency_score,\
-                coherence_score, overall_score, cand_ID, comp_ID, job_title, interview_no, question_no))
-    conn.commit()
-    data = c.fetchall()
-    return data
 
 def delete_one_analysis(cand_ID, comp_ID, job_title, interview_no, question_no):
     c.execute('''DELETE FROM analysis WHERE cand_ID=? AND comp_ID=? AND job_title=? AND 
@@ -174,13 +176,8 @@ def get_analysis_with_job_cand(comp_id, job_title, cand_id, interview_no):
     return data
 
 def get_one_analysis(comp_ID, job_title, cand_ID, interview_no, question_no):
-    c.execute('''SELECT * FROM analysis WHERE comp_ID=? AND job_title=? AND cand_ID=? AND 
-              interview_no=? AND question_no=?''', (comp_ID, job_title, cand_ID, interview_no, question_no))
-    data = c.fetchall()
-    return data
-
-def view_analysis_data():
-    c.execute('SELECT * FROM analysis')
+    c.execute('''SELECT * FROM analysis WHERE cand_ID=? AND comp_ID=? AND job_title=? AND 
+              interview_no=? AND question_no=?''', (cand_ID, comp_ID, job_title, interview_no, question_no))
     data = c.fetchall()
     return data
     

@@ -6,6 +6,17 @@ from database_functions import *
 #create_tables()
 #print(view_schema())
 
+
+# ### css ###
+def local_css(file_name):
+    with open(file_name) as f:
+        st.markdown('<style>{}</style>'.format(f.read()), unsafe_allow_html=True)
+
+
+
+
+############
+
 logged_in = [0, ""]
 with open("vars.txt", "r") as f:
     cache = f.readlines()
@@ -60,6 +71,11 @@ def navigation():
         utl.inject_custom_css()
         utl.navbar_component()
         utl.hide_row_index_css()
+
+        ### CSS
+        local_css("styles.css")
+
+        ####
 
         col1, col2, col3 = st.columns((10,2,1))
         col2.write(f'Welcome {logged_in[1]}!!')

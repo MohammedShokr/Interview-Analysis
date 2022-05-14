@@ -35,29 +35,86 @@ def compare_two_cands(comp_id, job_title, cand1, cand2, intv1, intv2, metric):
 
 
 def progressbar_FER_weights(FER_weights):
-    col1, col2, col3 = st.columns((1,10,1))
-    with col1:
-        st.write("Angry:")
-        st.write("Disgust:")
-        st.write("Fear")
-        st.write("Happy")
-        st.write("Neutral")
-        st.write("Sad")
-        st.write("Surprise")
-        
-    with col2:
-        st.progress(float(FER_weights[0]))
-        st.progress(float(FER_weights[1]))
-        st.progress(float(FER_weights[2]))
-        st.progress(float(FER_weights[3]))
-        st.progress(float(FER_weights[4]))
-        st.progress(float(FER_weights[5]))
-        st.progress(float(FER_weights[6]))
-    with col3:
-        st.write(f'{round(100*FER_weights[0],2)}%')
-        st.write(f'{round(100*FER_weights[1],2)}%')
-        st.write(f'{round(100*FER_weights[2],2)}%')
-        st.write(f'{round(100*FER_weights[3],2)}%')
-        st.write(f'{round(100*FER_weights[4],2)}%')
-        st.write(f'{round(100*FER_weights[5],2)}%')
-        st.write(f'{round(100*FER_weights[6],2)}%')
+    with st.container():
+        col1,col2,col3 = st.columns(3)
+        col1.write("Angry")
+        col2.progress(float(FER_weights[0]))
+        col3.write(f'{round(100*FER_weights[0],2)}%')
+    with st.container():
+        col1,col2,col3 = st.columns(3)
+        col1.write("Disgust")
+        col2.progress(float(FER_weights[1]))
+        col3.write(f'{round(100*FER_weights[1],2)}%')
+    with st.container():
+        col1,col2,col3 = st.columns(3)
+        col1.write("Fear")
+        col2.progress(float(FER_weights[2]))
+        col3.write(f'{round(100*FER_weights[2],2)}%')
+    with st.container():
+        col1,col2,col3 = st.columns(3)
+        col1.write(f'Happy')
+        col2.progress(float(FER_weights[3]))
+        col3.write(f'{round(100*FER_weights[3],2)}%')
+    with st.container():
+        col1,col2,col3 = st.columns(3)
+        col1.write("Neutral")
+        col2.progress(float(FER_weights[4]))
+        col3.write(f'{round(100*FER_weights[4],2)}%')
+    with st.container():
+        col1,col2,col3 = st.columns(3)
+        col1.write("Sad")
+        col2.progress(float(FER_weights[5]))
+        col3.write(f'{round(100*FER_weights[5],2)}%')
+    with st.container():
+        col1,col2,col3 = st.columns(3)
+        col1.write("Surprise")
+        col2.progress(float(FER_weights[6]))
+        col3.write(f'{round(100*FER_weights[6],2)}%')
+
+
+def progressbar_tone_weights(tone_weights):
+    with st.container():
+        col1,col2,col3 = st.columns(3)
+        col1.write("Angry")
+        col2.progress(float(tone_weights[0]))
+        col3.write(f'{round(100*tone_weights[0],2)}%')
+    with st.container():
+        col1,col2,col3 = st.columns(3)
+        col1.write("Fear")
+        col2.progress(float(tone_weights[1]))
+        col3.write(f'{round(100*tone_weights[1],2)}%')
+    with st.container():
+        col1,col2,col3 = st.columns(3)
+        col1.write("Happy")
+        col2.progress(float(tone_weights[2]))
+        col3.write(f'{round(100*tone_weights[2],2)}%')
+    with st.container():
+        col1,col2,col3 = st.columns(3)
+        col1.write("Sad")
+        col2.progress(float(tone_weights[3]))
+        col3.write(f'{round(100*tone_weights[3],2)}%')
+    with st.container():
+        col1,col2,col3 = st.columns(3)
+        col1.write("Surprise")
+        col2.progress(float(tone_weights[4]))
+        col3.write(f'{round(100*tone_weights[4],2)}%')
+
+
+def progressbar_fluency_weights(fluency_weights):
+    with st.container():
+        col1,col2,col3 = st.columns(3)
+        col1.write("Not Fluent")
+        col2.progress(float(fluency_weights[0]))
+        col3.write(f'{round(100*fluency_weights[0],2)}%')
+    with st.container():
+        col1,col2,col3 = st.columns(3)
+        col1.write("Average Fluency")
+        col2.progress(float(fluency_weights[1]))
+        col3.write(f'{round(100*fluency_weights[1],2)}%')
+    with st.container():
+        col1,col2,col3 = st.columns(3)
+        col1.write("Fluent")
+        col2.progress(float(fluency_weights[2]))
+        col3.write(f'{round(100*fluency_weights[2],2)}%')
+
+

@@ -72,7 +72,9 @@ def scoring_fluency_expressions(expression_weights):
     elif high < 0.3:
         score += 5
     elif high < 0.7:
-        score += 10
+        score += 7
+    else:
+        score +=10
     return round(score/3, 2)
 
 def analyze_audio_segments(segments_folder_path, wav_num):

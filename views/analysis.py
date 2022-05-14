@@ -10,6 +10,8 @@ from database_functions import *
 from audio_processing import convert_video_to_audio
 from coherence_assessment import coherence_scoring
 from speech_to_text import short_speech_to_text
+from Queries import *
+
 def load_view(comp_id):
     FER_score = 0
     tone_score = 0
@@ -88,7 +90,7 @@ def load_view(comp_id):
         analyzeBtn = st.button('Analyze')
     if analyzeBtn:
         if uploaded_file:
-            if "Tone Analysis" or "English Text Coherence" or "English Fluency Analysis"in selections:
+            if "Tone Analysis" or "English Text Coherence" in selections:
                 audio_path = convert_video_to_audio(video_path)
             if "Facial Analysis" in selections:
                 st.header("FER")
@@ -123,9 +125,7 @@ def load_view(comp_id):
                     st.progress(coherence_score)
                     overall_score = coherence_score*100
             if len(selections)>1:
-                overall_score = ((0.01*fer_weight*FER_score)+(0.01*tone_weight*tone_score)+\
-                    (0.01*fluency_weight*fluency_score)+(coherence_weight*coherence_score))/\
-                    (0.01*fer_weight+0.01*tone_weight+0.01*fluency_weight+0.01*coherence_weight)
+                overall_score = ((0.01*fer_weight*FER_score)+(0.01*tone_weight*tone_score)+(coherence_weight*coherence_score))/(0.01*fer_weight+0.01*tone_weight+0.01*coherence_weight)
                 st.header("Overall score")
                 st.write(f'{round(overall_score,2)}%')
                 st.progress(overall_score/100)
@@ -134,44 +134,112 @@ def load_view(comp_id):
                 if curr_cand_data:
                     cand_id = curr_cand_id
                 if get_one_analysis(comp_id, job_title, cand_id, interview_number, ques_number):
-                    update_analysis(cand_id, comp_id, job_title, interview_number, ques_number, str(FER_matrix),\
-                        FER_score, str(tone_matrix), tone_score, str(fluency_matrix), fluency_score,\
-                        coherence_score, overall_score)
+                    delete_one_analysis(comp_id, job_title, cand_id, interview_number, ques_number)
                     st.info("This analysis entry has been updated in the database")
                 else:
-                    st.info("This analysis entry has been added to the database")
-                    add_analysis(cand_id, comp_id, job_title, interview_number, ques_number, str(FER_matrix),\
-                        FER_score, str(tone_matrix), tone_score, str(fluency_matrix), fluency_score,\
-                        coherence_score, overall_score)
+                    st.info("This analysis enty has been added to the database")
+                add_analysis(cand_id, comp_id, job_title, interview_number, ques_number, str(FER_matrix),\
+                    FER_score, str(tone_matrix), tone_score, str(fluency_matrix), fluency_score,\
+                    coherence_score, overall_score)
                     
         else:
             st.write("ERROR: No video found, please select a video and try again!")
 
     if reportBx:
         try:
-            with st.expander("Show a report"):
-                st.header("Average scores of expressions")
-                st.write(f'angry: {round(100*FER_weights[0],2)}%')
-                st.progress(float(FER_weights[0]))
-                st.write(f'disgust: {round(100*FER_weights[1],2)}%')
-                st.progress(float(FER_weights[1]))
-                st.write(f'fear: {round(100*FER_weights[2],2)}%')
-                st.progress(float(FER_weights[2]))
-                st.write(f'happy: {round(100*FER_weights[3],2)}%')
-                st.progress(float(FER_weights[3]))
-                st.write(f'neutral: {round(100*FER_weights[4],2)}%')
-                st.progress(float(FER_weights[4]))
-                st.write(f'sad: {round(100*FER_weights[5],2)}%')
-                st.progress(float(FER_weights[5]))
-                st.write(f'surprise: {round(100*FER_weights[6],2)}%')
-                st.progress(float(FER_weights[6]))
+            with st.expander("Individual Report"):
+                # For a single analysis video
+                col9_spacer1, col9, col9_spacer2 = st.columns((2, 6, 2))
+                with col9:
+                    st.subheader('More analysis details')
+                with st.container():
+                    with st.container():
+                        st.subheader("Achieved Scores")
+                        _, col_ind4, col_ind5, col_ind6, col_ind7, _ = st.columns((1,4,4,4,4,1))
+                        # FER score
+                        col_ind4.metric("Facial Expression Analysis", f'{FER_score} %')
+                        # tone score
+                        col_ind5.metric("Tone Analysis", f'{tone_score} %')
+                        # fluency score
+                        col_ind6.metric("English Fluency Analysis", f'{fluency_score} %')
+                        # coherence score
+                        col_ind7.metric("Topic Coherence Analysis", f'{round(100*coherence_score,2)} %')
+                    #######
+                    FER_matrix = list(FER_matrix.values())
+                    tone_matrix = list(tone_matrix.values())
+                    fluency_matrix = list(fluency_matrix.values())
 
-                st.header("Detailed report")
-                df = pd.DataFrame(
-                np.array(list(FER_matrix.values())),
-                columns=(['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']))
-                st.dataframe(100*df)
+                    with st.container():
+                        try:
+                            dummy = len(FER_weights)
+                            st.subheader("FER: average score details")
+                            progressbar_FER_weights(FER_weights)
+                            st.subheader("FER: score details for each second")
+                            FER_matrix = (np.array(FER_matrix)*100).round(decimals=0).astype(int)
+                            FER_np = np.array(list(FER_matrix))
+                            indx = []
+                            for i in range(1, len(FER_np)+1):
+                                indx.append([i])
+                            indx = np.array(indx)
+                            FER_np = np.append(indx, FER_np, axis=1)
+                            # st.write(np.array(list(FER_matrix)))
+                            # st.write(FER_np)
+                            _, colmat, _ = st.columns((2, 4, 2))
+                            df = pd.DataFrame(
+                                FER_np,
+                                columns=(['time index(sec)','angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']))
+                            colmat.dataframe(df)
+                            colmat.text("")
+                            colmat.text("")
+                        except:
+                            st.info("No FER data")
 
+                    #########################################################
+                    with st.container():
+                        try:
+                            dummy = len(tone_weights)
+                            st.subheader("Tone: average score details")
+                            progressbar_tone_weights(tone_weights)
+                            st.subheader("Tone: score details for each 5-seconds")
+                            tone_matrix = (np.array(tone_matrix)*100).round(decimals=0).astype(int)
+                            tone_np = np.array(list(tone_matrix))
+                            indx = []
+                            for i in range(1, len(tone_np)+1):
+                                indx.append([i])
+                            indx = np.array(indx)
+                            tone_np = np.append(indx, tone_np, axis=1)
+                            _, colmat, _ = st.columns((2, 4, 2))
+                            df = pd.DataFrame(
+                                tone_np,
+                                columns=(['5-sec number', 'Angry', 'Fear', 'Happy', 'Sad', 'surprise']))
+                            colmat.dataframe(df)
+                            colmat.text("")
+                            colmat.text("")
+                        except:
+                            st.info("No tone data")
+
+                    with st.container():
+                        try:
+                            dummy = len(fluency_weights)
+                            st.subheader("Fluency: average score details")
+                            progressbar_fluency_weights(fluency_weights)
+                            st.subheader("Fluency: score details for each 5-seconds")
+                            fluency_matrix = (np.array(fluency_matrix)*100).round(decimals=0).astype(int)
+                            fluency_np = np.array(list(fluency_matrix))
+                            indx = []
+                            for i in range(1, len(fluency_np)+1):
+                                indx.append([i])
+                            indx = np.array(indx)
+                            fluency_np = np.append(indx, fluency_np, axis=1)
+                            _, colmat, _ = st.columns((2, 4, 2))
+                            df = pd.DataFrame(
+                                fluency_np,
+                                columns=(['5-sec number', 'Not Fluent', 'Average', 'Fluent']))
+                            colmat.dataframe(df)
+                            colmat.text("")
+                            colmat.text("")
+                        except:
+                            st.info("No fluency data")
         except:
             st.info("Report will be shown after analysis")
     

@@ -120,6 +120,10 @@ def get_cand(cand_id):
     data = c.fetchall()
     return data
 
+def update_cand(candidate_id_edit, candidate_name_edit, candidate_qual_edit):
+    c.execute('UPDATE candidate SET cand_name=?, cand_qualifications=? WHERE cand_ID=?',\
+                (candidate_name_edit, candidate_qual_edit, candidate_id_edit))
+
 def add_candidate(cand_ID, cand_name, cand_qualifications):
     c.execute('''INSERT INTO candidate(cand_ID, cand_name, cand_qualifications)
                  VALUES (?,?,?)''', (cand_ID, cand_name, cand_qualifications))

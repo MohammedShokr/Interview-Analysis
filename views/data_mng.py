@@ -49,7 +49,7 @@ def load_view(comp_id):
         
             
         st.subheader("Delete a job")
-        col9, col10, col11 = st.columns((2,6,2))
+        col9, col10, col11 = st.columns((6,6,2))
         if len(available_jobs):
             selected_job_delete = col9.selectbox("Choose a Job Title to delete", available_jobs)
             if col11.button("Delete Job"):
@@ -58,7 +58,7 @@ def load_view(comp_id):
             st.info("You don't have any jobs to delete")
             
         with st.expander("View all jobs in details"):
-            colex1, colex2, colex3 = st.columns((1,3,1))
+            colex1, colex2, colex3 = st.columns((1,10,1))
             jobs_df = pd.DataFrame(get_jobs_comp(comp_id), columns=jobs_cols)[jobs_cols[:-1]]
             colex2.dataframe(jobs_df)
     

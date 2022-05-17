@@ -75,12 +75,12 @@ def load_view(comp_id):
         interview_number = col_12.number_input('Interview No.', 1, 10)
     #################################################################################################
     
-    uploaded_file = st.file_uploader("Choose a file")
+    uploaded_file = st.file_uploader("Choose a file", type=['mp4','webm'])
     if uploaded_file is not None:
         st.video(uploaded_file)
         g = io.BytesIO(uploaded_file.read())  ## BytesIO Object
         video_path = "./test_interviews/testout_simple.mp4"
-        
+        print(uploaded_file.type)
         with open(video_path, 'wb') as out:  ## Open temporary file as bytes
             out.write(g.read())  ## Read bytes and put it into the file
 
@@ -96,7 +96,7 @@ def load_view(comp_id):
                 st.header("FER")
                 with st.spinner("Facial expressions are being analyzed"):
                     FER_score, FER_matrix, FER_weights = analyze_face(video_path)
-                st.write(f'The score based on face expression analysis is: {FER_score}')
+                st.write(f'The score based on face expression analysis is: {FER_score} %')
                 st.progress(FER_score/100)
                 overall_score = FER_score
                 
@@ -104,7 +104,7 @@ def load_view(comp_id):
                 st.header("Tone")
                 with st.spinner("Tone expressions are being analyzed"):
                     tone_score, tone_matrix, tone_weights = analyze_tone(audio_path)
-                st.write(f'The score based on tone analysis is: {tone_score}')
+                st.write(f'The score based on tone analysis is: {tone_score} %')
                 st.progress(tone_score/100)
                 overall_score = tone_score
                 
@@ -112,7 +112,7 @@ def load_view(comp_id):
                 st.header("Fluency")
                 with st.spinner("English Fluency is being analyzed"):
                     fluency_score, fluency_matrix, fluency_weights = analyze_fluency(audio_path)
-                st.write(f'The score based on fluency analysis is: {fluency_score}')
+                st.write(f'The score based on fluency analysis is: {fluency_score} %')
                 st.progress(fluency_score/100)
                 overall_score = fluency_score
 

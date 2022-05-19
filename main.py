@@ -13,8 +13,6 @@ def local_css(file_name):
         st.markdown('<style>{}</style>'.format(f.read()), unsafe_allow_html=True)
 
 
-
-
 ############
 
 logged_in = [0, ""]
@@ -69,7 +67,7 @@ def navigation():
         st.set_page_config(layout="wide", page_title='Interview-Analysis')
         st.set_option('deprecation.showPyplotGlobalUse', False)
         utl.inject_custom_css()
-        utl.navbar_component()
+        utl.navbar_component(logged_in[1])
         utl.hide_row_index_css()
 
         ### CSS
@@ -78,7 +76,6 @@ def navigation():
         ####
 
         col1, col2, col3 = st.columns((10,2,1))
-        col2.write(f'Welcome {logged_in[1]}!!')
         but3 = col3.button("Logout")
         if but3:
             with open("vars.txt", "w") as f2:

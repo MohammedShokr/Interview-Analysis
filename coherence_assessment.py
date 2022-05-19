@@ -73,4 +73,4 @@ def coherence_scoring(text, num_topics=5):
     # Compute Coherence Score
     coherence_model_lda = CoherenceModel(model=lda_model, texts=data_lemmatized, dictionary=id2word, coherence='c_v')
     coherence_lda = coherence_model_lda.get_coherence()
-    return coherence_lda
+    return round(coherence_lda,2)

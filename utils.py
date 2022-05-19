@@ -28,7 +28,7 @@ def get_current_route():
         return None
 
 
-def navbar_component():
+def navbar_component(comp_id):
     with open("assets/images/settings.png", "rb") as image_file:
         image_as_base64 = base64.b64encode(image_file.read())
 
@@ -46,6 +46,7 @@ def navbar_component():
                 <ul class="navlist">
                 {navbar_items}
                 </ul>
+                <p class="welcome"> Welcome {comp_id} ! </p>
                 <div class="dropdown" id="settingsDropDown">
                     <img class="dropbtn" src="data:image/png;base64, {image_as_base64.decode("utf-8")}"/>
                     <div id="myDropdown" class="dropdown-content">

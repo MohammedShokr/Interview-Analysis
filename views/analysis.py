@@ -29,7 +29,7 @@ def load_view(comp_id):
     
     with st.sidebar:
         st.title("Analysis")
-        selections = st.multiselect('Select what you want to analyze', ["Facial Analysis", "Tone Analysis", "English Text Coherence", "English Fluency Analysis"])
+        selections = st.multiselect('Select what you want to analyze', ["Facial Analysis", "Tone Analysis", "English Topic Coherence", "English Fluency Analysis"])
         if len(selections)>1:
             if "Facial Analysis" in selections:
                 fer_weight = st.slider('FER weight', 0, 100, 50)
@@ -43,38 +43,43 @@ def load_view(comp_id):
         addAnalysisBx = st.checkbox("Add Analysis results to database")
     
     ######################## Database Management ############################
-    curr_cand_id = st.text_input("Ender your candidate National ID", "1")
-    curr_cand_data = get_cand(curr_cand_id)
-    if not curr_cand_data:
-        st.error('A candidate of this ID is not in the database')
-        with st.expander("Add a new candidate"):
-            add_cand_form = st.form(key='add_candidate')
-            cand_name = add_cand_form.text_input("Enter Candidate's name")
-            cand_id = add_cand_form.text_input("Ender candidate National ID")
-            cand_qualifications = add_cand_form.text_input("Enter candidate's qualification")
-            add_cand_btn = add_cand_form.form_submit_button('Add Candidate')
-        if add_cand_btn:
-            try:
-                add_candidate(cand_id, cand_name, cand_qualifications)
-                st.success('The candidate added successfuly to the database')
-   
-            except:
-                st.error('This data cannot be inserted. Already an ID')
-            with st.expander("View All Candidates "):
-                result = view_candidate_data()
-                # st.write(result)
-                cand_df = pd.DataFrame(result,columns=["ID","Name","Qualification"])
-                st.dataframe(cand_df)
+    _, center,_ = st.columns((1,3,1))
+    center.title("Interview Analysis Page")
+
+    if addAnalysisBx:
+        st.header("Interview-related Data")
+        curr_cand_id = st.text_input("Ender your candidate National ID", "1")
+        curr_cand_data = get_cand(curr_cand_id)
+        if not curr_cand_data:
+            st.error('A candidate of this ID is not in the database')
+            with st.expander("Add a new candidate"):
+                add_cand_form = st.form(key='add_candidate')
+                cand_name = add_cand_form.text_input("Enter Candidate's name")
+                cand_id = add_cand_form.text_input("Ender candidate National ID")
+                cand_qualifications = add_cand_form.text_input("Enter candidate's qualification")
+                add_cand_btn = add_cand_form.form_submit_button('Add Candidate')
+            if add_cand_btn:
+                try:
+                    add_candidate(cand_id, cand_name, cand_qualifications)
+                    st.success('The candidate added successfuly to the database')
     
-    col_11, col_12 = st.columns(2)           
-    with st.form('add_analysis'):
-        available_jobs = [job[0] for job in get_jobs_comp(comp_id)]
+                except:
+                    st.error('This data cannot be inserted. Already an ID')
+                with st.expander("View All Candidates "):
+                    result = view_candidate_data()
+                    # st.write(result)
+                    cand_df = pd.DataFrame(result,columns=["ID","Name","Qualification"])
+                    st.dataframe(cand_df)
         
-        job_title = col_11.selectbox("Choose job for analysis", available_jobs)
-        ques_number = col_11.number_input('Question No.', 1, 50)   
-        interview_number = col_12.number_input('Interview No.', 1, 10)
+        col_11, col_12 = st.columns(2)           
+        with st.form('add_analysis'):
+            available_jobs = [job[0] for job in get_jobs_comp(comp_id)]
+            
+            job_title = col_11.selectbox("Choose job for analysis", available_jobs)
+            ques_number = col_11.number_input('Question No.', 1, 50)   
+            interview_number = col_12.number_input('Interview No.', 1, 10)
     #################################################################################################
-    
+    st.header("Upload A Video to Analyze🥳")
     uploaded_file = st.file_uploader("Choose a file", type=['mp4','webm'])
     if uploaded_file is not None:
         st.video(uploaded_file)
@@ -112,11 +117,12 @@ def load_view(comp_id):
                 st.header("Fluency")
                 with st.spinner("English Fluency is being analyzed"):
                     fluency_score, fluency_matrix, fluency_weights = analyze_fluency(audio_path)
+                fluency_score = round(fluency_score,2)
                 st.write(f'The score based on fluency analysis is: {fluency_score} %')
                 st.progress(fluency_score/100)
                 overall_score = fluency_score
 
-            if "English Text Coherence" in selections:
+            if "English Topic Coherence" in selections:
                 st.header("English")
                 with st.spinner("English coherence is being assessed"):
                     text = short_speech_to_text(audio_path)
@@ -145,54 +151,64 @@ def load_view(comp_id):
         else:
             st.write("ERROR: No video found, please select a video and try again!")
 
-    if reportBx:
-        try:
-            with st.expander("Individual Report"):
-                # For a single analysis video
-                col9_spacer1, col9, col9_spacer2 = st.columns((2, 6, 2))
-                with col9:
-                    st.subheader('More analysis details')
-                with st.container():
+        if reportBx:
+            try:
+                with st.expander("More analysis details"):
+                    # For a single analysis video
+                    
                     with st.container():
-                        st.subheader("Achieved Scores")
-                        _, col_ind4, col_ind5, col_ind6, col_ind7, _ = st.columns((1,4,4,4,4,1))
-                        # FER score
-                        col_ind4.metric("Facial Expression Analysis", f'{FER_score} %')
-                        # tone score
-                        col_ind5.metric("Tone Analysis", f'{tone_score} %')
-                        # fluency score
-                        col_ind6.metric("English Fluency Analysis", f'{fluency_score} %')
-                        # coherence score
-                        col_ind7.metric("Topic Coherence Analysis", f'{round(100*coherence_score,2)} %')
-                    #######
-                    FER_matrix = list(FER_matrix.values())
-                    tone_matrix = list(tone_matrix.values())
-                    fluency_matrix = list(fluency_matrix.values())
+                        with st.container():
+                            st.subheader("Achieved Scores")
+                            _, col_ind4, col_ind5, col_ind6, col_ind7, _ = st.columns((1,4,4,4,4,1))
+                            # FER score
+                            if 'Facial Analysis' in selections:
+                                col_ind4.metric("Facial Expression Analysis", f'{FER_score} %')
+                            else:
+                                col_ind4.metric("Facial Expression Analysis", '-')
+                            # tone score
+                            if 'Tone Analysis' in selections:
+                                col_ind5.metric("Tone Analysis", f'{tone_score} %')
+                            else:
+                                col_ind5.metric("Tone Analysis", '-')
+                            # fluency score
+                            if 'English Fluency Analysis' in selections:
+                                col_ind6.metric("English Fluency Analysis", f'{fluency_score} %')
+                            else:
+                                col_ind6.metric("English Fluency Analysis", '-')
+                            # coherence score
+                            if 'English Topic Coherence' in selections:
+                                col_ind7.metric("Topic Coherence Analysis", f'{round(100*coherence_score,2)} %')
+                            else:
+                                col_ind7.metric("Topic Coherence Analysis", '-')
+                        #######
+                        FER_matrix = list(FER_matrix.values())
+                        tone_matrix = list(tone_matrix.values())
+                        fluency_matrix = list(fluency_matrix.values())
 
-                    with st.container():
-                        try:
-                            dummy = len(FER_weights)
-                            st.subheader("FER: average score details")
-                            progressbar_FER_weights(FER_weights)
-                            st.subheader("FER: score details for each second")
-                            FER_matrix = (np.array(FER_matrix)*100).round(decimals=0).astype(int)
-                            FER_np = np.array(list(FER_matrix))
-                            indx = []
-                            for i in range(1, len(FER_np)+1):
-                                indx.append([i])
-                            indx = np.array(indx)
-                            FER_np = np.append(indx, FER_np, axis=1)
-                            # st.write(np.array(list(FER_matrix)))
-                            # st.write(FER_np)
-                            _, colmat, _ = st.columns((2, 4, 2))
-                            df = pd.DataFrame(
-                                FER_np,
-                                columns=(['time index(sec)','angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']))
-                            colmat.dataframe(df)
-                            colmat.text("")
-                            colmat.text("")
-                        except:
-                            st.info("No FER data")
+                        with st.container():
+                            try:
+                                dummy = len(FER_weights)
+                                st.subheader("FER: average score details")
+                                progressbar_FER_weights(FER_weights)
+                                st.subheader("FER: score details for each second")
+                                FER_matrix = (np.array(FER_matrix)*100).round(decimals=0).astype(int)
+                                FER_np = np.array(list(FER_matrix))
+                                indx = []
+                                for i in range(1, len(FER_np)+1):
+                                    indx.append([i])
+                                indx = np.array(indx)
+                                FER_np = np.append(indx, FER_np, axis=1)
+                                # st.write(np.array(list(FER_matrix)))
+                                # st.write(FER_np)
+                                _, colmat, _ = st.columns((2, 4, 2))
+                                df = pd.DataFrame(
+                                    FER_np,
+                                    columns=(['time index(sec)','angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']))
+                                colmat.dataframe(df)
+                                colmat.text("")
+                                colmat.text("")
+                            except:
+                                pass
 
                     #########################################################
                     with st.container():
@@ -216,7 +232,7 @@ def load_view(comp_id):
                             colmat.text("")
                             colmat.text("")
                         except:
-                            st.info("No tone data")
+                            pass
 
                     with st.container():
                         try:
@@ -239,9 +255,9 @@ def load_view(comp_id):
                             colmat.text("")
                             colmat.text("")
                         except:
-                            st.info("No fluency data")
-        except:
-            st.info("Report will be shown after analysis")
+                            pass
+            except:
+                pass
     
     
     

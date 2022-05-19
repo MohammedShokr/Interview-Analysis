@@ -174,7 +174,47 @@ def load_view(comp_id):
                 best_coherence_score = cand_analysis_df[["job_title", "interview_no", "coherence_score"]]\
                                 .groupby(["job_title", "interview_no"]).max()["coherence_score"][0]
                 col_ind7.metric("Topic Coherence Analysis", f'{round(100*best_coherence_score,2)} %')
-
+        
+        col5_spacer1, col5, col5_spacer2 = st.columns((2, 6, 2))
+        with col5:
+            st.subheader('Interview Details')
+        with st.container():
+            with col5:
+                cand_jobs = cand_analysis_df["job_title"].unique()
+                cand_job_title = st.selectbox("Choose a Job title", cand_jobs)
+                cand_interviews = cand_analysis_df[cand_analysis_df["job_title"]==cand_job_title]["interview_no"]
+                cand_interview_no = st.selectbox("Select an Interview", cand_interviews.unique())
+                cand_questions = cand_analysis_df[(cand_analysis_df["job_title"]==cand_job_title) &\
+                                (cand_analysis_df["interview_no"]==cand_interview_no)]["question_no"]
+            
+            if cand_interview_no: cand_interview_no = int(cand_interview_no)
+            cand_interview_df = pd.DataFrame(get_analysis_with_job_cand(comp_id, cand_job_title, candindate_ID, cand_interview_no), columns=analysis_cols)
+        with st.container():
+        
+            _, col_ind12, col_ind13, _ = st.columns(4)
+            if not cand_interview_df.empty:
+                questions_num = len(list(cand_questions))
+                col_ind12.metric("Number of Questions", questions_num)
+                overall_score = cand_interview_df['overall_score'].mean()
+                col_ind13.metric("Overall Score", f'{round(overall_score, 2)} %')
+                
+            col11_spacer1, col11, col11_spacer2 = st.columns((2, 6, 2))
+            col11.markdown(candidate_evaluation(overall_score))
+            
+            _, col_ind8, col_ind9, col_ind10, col_ind11, _ = st.columns((1,4,4,4,4,1))
+            if not cand_interview_df.empty:
+                # Best FER score
+                fer_score = cand_interview_df['FER_score'].mean()
+                col_ind8.metric("Facial Expression Analysis", f'{round(fer_score,2)} %')
+                # Best tone score
+                tone_score = cand_interview_df['tone_score'].mean()
+                col_ind9.metric("Tone Analysis", f'{round(tone_score,2)} %')
+                # Best fluency score
+                fluency_score = cand_interview_df['fluency_score'].mean()
+                col_ind10.metric("English Fluency Analysis", f'{round(fluency_score,2)} %')
+                # Best coherence score
+                coherence_score = cand_interview_df['coherence_score'].mean()
+                col_ind11.metric("Topic Coherence Analysis", f'{round(100*coherence_score,2)} %')
         #For a single analysis video
         col9_spacer1, col9, col9_spacer2 = st.columns((2, 6, 2))
         with col9:
@@ -182,16 +222,9 @@ def load_view(comp_id):
         with st.container():
             with col9:
                 with st.container():
-                    cand_jobs = cand_analysis_df["job_title"].unique()
-                    cand_job_title = st.selectbox("Choose a Job title", cand_jobs)
-                    cand_interviews = cand_analysis_df[cand_analysis_df["job_title"]==cand_job_title]["interview_no"]
-                    cand_interview_no = st.selectbox("Select an Interview", cand_interviews.unique())
-                    cand_questions = cand_analysis_df[(cand_analysis_df["job_title"]==cand_job_title) &\
-                                    (cand_analysis_df["interview_no"]==cand_interview_no)]["question_no"]
                     ques_no = st.selectbox("Select Question no.", list(cand_questions))
             ########
             with st.container():
-                if cand_interview_no: cand_interview_no = int(cand_interview_no)
                 cand_analysis = pd.DataFrame(get_one_analysis(comp_id, cand_job_title, candindate_ID, cand_interview_no, ques_no), columns=analysis_cols)
 
                 st.subheader("Achieved Scores")

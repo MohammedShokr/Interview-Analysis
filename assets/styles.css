@@ -61,6 +61,11 @@
     opacity:1;
 }
 
+.welcome {
+    position: fixed;
+    display: inline-block;
+    right: 5rem;
+}
 .dropdown {
     position: fixed;
     display: inline-block;

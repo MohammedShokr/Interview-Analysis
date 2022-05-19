@@ -1,6 +1,7 @@
 :root {
 	--section-color: #417D7A;
 	--numbers-color: #1D5C63;
+	--bg-color: #1A3C40;
 }
 
 
@@ -76,6 +77,7 @@
 }
 
 /*******************************Weights names********************************/
+#root > div:nth-child(1) > div > div > div > div > section > div > div:nth-child(1) > div > div > ul > li > div > div:nth-child(1) > div > div:nth-child(5) > div > div:nth-child(4) > div > div:nth-child(7) > div > div > div:nth-child(1) > div:nth-child(1) > div > div > div > div > p,
 #root > div:nth-child(1) > div > div > div > div > section > div > div:nth-child(1) > div > div > ul > li > div > div:nth-child(1) > div > div:nth-child(5) > div > div:nth-child(5) > div > div:nth-child(2) > div > div > div:nth-child(1) > div:nth-child(1) > div > div > div > div > p,
 #root > div:nth-child(1) > div > div > div > div > section > div > div:nth-child(1) > div > div > ul > li > div > div:nth-child(1) > div > div:nth-child(5) > div > div:nth-child(5) > div > div:nth-child(3) > div > div > div:nth-child(1) > div:nth-child(1) > div > div > div > div > p,
 #root > div:nth-child(1) > div > div > div > div > section > div > div:nth-child(1) > div > div > ul > li > div > div:nth-child(1) > div > div:nth-child(5) > div > div:nth-child(5) > div > div:nth-child(4) > div > div > div:nth-child(1) > div:nth-child(1) > div > div > div > div > p,
@@ -130,5 +132,10 @@
 }
 
 
-/*******************************tone Weights names********************************/
-
+/*******************************Errors********************************/
+#root > div:nth-child(1) > div > div > div > div > section > div > div:nth-child(1) > div > div:nth-child(14) > ul > li > div > div:nth-child(1) > div > div:nth-child(3) > div:nth-child(1),
+#root > div:nth-child(1) > div > div > div > div > section > div > div:nth-child(1) > div > div:nth-child(14) > ul > li > div > div:nth-child(1) > div > div:nth-child(3) > div > div:nth-child(1) > div > div > div,
+#root > div:nth-child(1) > div > div > div > div > section > div > div:nth-child(1) > div > div:nth-child(14) > ul > li > div > div:nth-child(1) > div > div:nth-child(3) > div:nth-child(3)
+{
+	background-color: var(--bg-color);
+}

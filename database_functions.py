@@ -140,7 +140,7 @@ def add_analysis(cand_ID, comp_ID, job_title, interview_no, question_no, FER , F
                  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)''', (cand_ID, comp_ID, job_title, interview_no, question_no, FER , FER_score, tone, tone_score, fluency, fluency_score, coherence_score, overall_score))
     conn.commit()
 
-def delete_one_analysis(cand_ID, comp_ID, job_title, interview_no, question_no):
+def delete_one_analysis(comp_ID, job_title, cand_ID, interview_no, question_no):
     c.execute('''DELETE FROM analysis WHERE cand_ID=? AND comp_ID=? AND job_title=? AND 
               interview_no=? AND question_no=?''', (cand_ID, comp_ID, job_title, interview_no, question_no))
     conn.commit()
@@ -180,8 +180,10 @@ def get_analysis_with_job_cand(comp_id, job_title, cand_id, interview_no):
     return data
 
 def get_one_analysis(comp_ID, job_title, cand_ID, interview_no, question_no):
-    c.execute('''SELECT * FROM analysis WHERE cand_ID=? AND comp_ID=? AND job_title=? AND 
-              interview_no=? AND question_no=?''', (cand_ID, comp_ID, job_title, interview_no, question_no))
+    c.execute('''SELECT * FROM analysis WHERE comp_ID=? AND job_title=? AND cand_ID=? AND 
+              interview_no=? AND question_no=?''', (comp_ID, job_title, cand_ID, interview_no, question_no))
     data = c.fetchall()
     return data
     
+#print(get_one_analysis('5', 'Area Sales Manager', '1', 1, 1))
+#delete_one_analysis('1', '5', 'Area Sales Manager', 1, 1)

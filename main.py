@@ -23,17 +23,20 @@ with open("vars.txt", "r") as f:
         logged_in[1] = cache[1]
 
 
-users_raw = []
-with open("users.txt", "r") as f1:
-    users_raw = f1.readlines()
-users = [usr.split('-')[0].strip() for usr in users_raw]
-passwords = [usr.split('-')[1].strip() for usr in users_raw]
+# users_raw = []
+# with open("users.txt", "r") as f1:
+#     users_raw = f1.readlines()
+# users = [usr.split('-')[0].strip() for usr in users_raw]
+# passwords = [usr.split('-')[1].strip() for usr in users_raw]
 
+users_raw = get_company_IDs()
+users = [u[0] for u in users_raw]
+passwords = [get_company(u)[0][2] for u in users]
 
 def navigation():
     if logged_in[0] == 0:
         username = st.text_input("Username: ")
-        entered_pass = st.text_input("Password: ")
+        entered_pass = st.text_input("New Password: ", type="password")
         but1 = st.button("Login")
         but2 = st.button("Sign Up")
         if but1:
@@ -55,7 +58,7 @@ def navigation():
             st.experimental_rerun()
     elif logged_in[0] == 3:
         username = st.text_input("New username: ")
-        entered_pass = st.text_input("New Password: ")
+        entered_pass = st.text_input("New Password: ", type="password")
         but2 = st.button("Sign Up")
         if but2:
             with open("vars.txt", "w") as f2:

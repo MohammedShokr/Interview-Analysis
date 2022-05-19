@@ -89,9 +89,11 @@ def analyze_face(video_file):
     c = 0
     expression_matrix = {}
     frame_cnt = 0
+    total_frames = 0
     while True:
         c += 1
         ret, frame = cap.read()
+        total_frames+=1
         if not ret:
             break
         if c % 30 == 0:
@@ -110,6 +112,6 @@ def analyze_face(video_file):
     cv2.destroyAllWindows()
     expression_weights = np.mean(np.array(list(expression_matrix.values())), axis=0)
     score = scoring_expression(expression_weights)
-    return score*10, expression_matrix, expression_weights
+    return score*10, expression_matrix, expression_weights, total_frames
 
 #print(analyze_face("./test_interviews/test1.mp4"))

@@ -85,7 +85,6 @@ def load_view(comp_id):
         st.video(uploaded_file)
         g = io.BytesIO(uploaded_file.read())  ## BytesIO Object
         video_path = "./test_interviews/testout_simple.mp4"
-        print(uploaded_file.type)
         with open(video_path, 'wb') as out:  ## Open temporary file as bytes
             out.write(g.read())  ## Read bytes and put it into the file
 
@@ -95,16 +94,18 @@ def load_view(comp_id):
         analyzeBtn = st.button('Analyze')
     if analyzeBtn:
         if uploaded_file:
-            if "Tone Analysis" or "English Text Coherence" in selections:
-                audio_path = convert_video_to_audio(video_path)
+            frames_flag = 0
             if "Facial Analysis" in selections:
                 st.header("FER")
                 with st.spinner("Facial expressions are being analyzed"):
-                    FER_score, FER_matrix, FER_weights = analyze_face(video_path)
+                    FER_score, FER_matrix, FER_weights, total_frames = analyze_face(video_path)
+                
+                frames_flag = (len(FER_matrix.keys()))/(total_frames//30) < 0.75
                 st.write(f'The score based on face expression analysis is: {FER_score} %')
                 st.progress(FER_score/100)
                 overall_score = FER_score
-                
+            if "Tone Analysis" or "English Text Coherence" in selections:
+                audio_path = convert_video_to_audio(video_path)    
             if "Tone Analysis" in selections:
                 st.header("Tone")
                 with st.spinner("Tone expressions are being analyzed"):
@@ -139,7 +140,7 @@ def load_view(comp_id):
             if addAnalysisBx:
                 if curr_cand_data:
                     cand_id = curr_cand_id
-                if get_one_analysis(comp_id, job_title, cand_id, interview_number, ques_number):
+                if len(get_one_analysis(comp_id, job_title, cand_id, interview_number, ques_number)):
                     delete_one_analysis(comp_id, job_title, cand_id, interview_number, ques_number)
                     st.info("This analysis entry has been updated in the database")
                 else:
@@ -147,6 +148,18 @@ def load_view(comp_id):
                 add_analysis(cand_id, comp_id, job_title, interview_number, ques_number, str(FER_matrix),\
                     FER_score, str(tone_matrix), tone_score, str(fluency_matrix), fluency_score,\
                     coherence_score, overall_score)
+                if frames_flag:
+                    st.warning('''WARNING: The results were added to the database.
+                               The interviewee's  face was not detected most of the time''')
+                    col4, col5, col6 = st.columns([5,4,3])
+                    if col5.button("Delete Analysis"):
+                        st.write("Hello")
+                        st.write(job_title)
+                        delete_one_analysis(comp_id, job_title, cand_id, interview_number, ques_number)
+                        
+            else:
+                if frames_flag:
+                    st.warning('''WARNING: The interviewee's  face was not detected most of the time''')
                     
         else:
             st.write("ERROR: No video found, please select a video and try again!")

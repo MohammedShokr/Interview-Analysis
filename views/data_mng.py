@@ -1,3 +1,5 @@
+from faulthandler import disable
+from pickle import TRUE
 import streamlit as st
 import pandas as pd
 from database_functions import *
@@ -96,9 +98,72 @@ def load_view(comp_id):
             cands_df = pd.DataFrame(view_candidate_data(), columns=cand_cols)
             colex5.dataframe(cands_df)        
     elif choice == "Manage Analysis Data":
+        ######################## Edit Analysis Data #########################
         st.subheader("Edit Analysis data")
-        st.subheader("Delete Analysis")
+        st.markdown("Choose analysis data to tune the needed weights")
+        col22, col23 = st.columns(2)
+        candindate_ID = col22.text_input("Enter Candidate's National ID")
+        cand_analysis_df = pd.DataFrame(get_analysis_with_cand(comp_id, candindate_ID), columns=analysis_cols)
+        cand_jobs = cand_analysis_df["job_title"].unique()
+        cand_job_title = col23.selectbox("Choose a Job title", cand_jobs)
+        cand_interviews = cand_analysis_df[cand_analysis_df["job_title"]==cand_job_title]["interview_no"]
+        cand_interview_no = col22.selectbox("Select an Interview", cand_interviews.unique())
+        cand_questions = cand_analysis_df[(cand_analysis_df["job_title"]==cand_job_title) &\
+                        (cand_analysis_df["interview_no"]==cand_interview_no)]["question_no"]
+        ques_no = col23.selectbox("Select Question no.", list(cand_questions))
+        cand_interview_no = int(cand_interview_no)
+        cand_analysis = pd.DataFrame(get_one_analysis(comp_id, cand_job_title, candindate_ID, cand_interview_no, ques_no), columns=analysis_cols)
         
+        st.markdown("Adjust weights to change the effective overall score")
+        col24, col25 = st.columns((10, 3))
+        fer_weight = col24.slider('FER weight', 0, 100, 50)
+        FER_score = col25.text_input('FER Score %', cand_analysis['FER_score'][0], disabled=True)
+        
+        col26, col27 = st.columns((10, 3))
+        tone_weight = col26.slider('Tone analysis weight', 0, 100, 50)
+        tone_score = col27.text_input('Tone analysis Score %', cand_analysis['tone_score'][0], disabled=True)
+        
+        col28, col29 = st.columns((10, 3))
+        fluency_weight = col28.slider('Fluency analysis weight', 0, 100, 50)
+        fluency_score = col29.text_input('Fluency analysis Score %', cand_analysis['fluency_score'][0], disabled=True)
+        
+        col30, col31 = st.columns((10, 3))
+        coherence_weight = col30.slider('English Topic coherence weight', 0, 100, 50)
+        coherence_score = col31.text_input('Topic coherence Score %', round(100*cand_analysis['coherence_score'][0]), disabled=True)
+        
+        _, col32, _, col33, _ = st.columns((1, 5, 0.5, 3, 1))
+        overall_score = ((0.01*fer_weight*cand_analysis['FER_score'][0])+\
+            (0.01*tone_weight*cand_analysis['tone_score'][0])+\
+            (0.01*fluency_weight*cand_analysis['fluency_score'][0])+\
+            (coherence_weight*cand_analysis['coherence_score'][0]))/\
+            (0.01*fer_weight+0.01*tone_weight+0.01*fluency_weight+0.01*coherence_weight)
+        overall_score = col32.text_input('The newly calulated overall score %', round(overall_score,2), disabled=True)
+        col33.markdown("\n")
+        col33.markdown("\n")
+        if col33.button('Update Analysis'):
+            update_one_analysis(comp_id, cand_job_title, candindate_ID, cand_interview_no, ques_no, overall_score)
+               
+        ########################### Delete Analysis Data ######################## 
+        st.subheader("Delete Analysis")
+        col34, col35 = st.columns(2)
+        candindate_ID_delete = col34.text_input("Candidate's National ID")
+        delete_cand_analysis_df = pd.DataFrame(get_analysis_with_cand(comp_id, candindate_ID_delete), columns=analysis_cols)
+        if not delete_cand_analysis_df.empty:
+            delete_cand_jobs = delete_cand_analysis_df["job_title"].unique()
+            delete_cand_job_title = col35.selectbox("Job title", delete_cand_jobs)
+            delete_cand_interviews = delete_cand_analysis_df[delete_cand_analysis_df["job_title"]==delete_cand_job_title]["interview_no"]
+            delete_cand_interview_no = col34.selectbox("Interview Number", delete_cand_interviews.unique())
+            delete_cand_questions = delete_cand_analysis_df[(delete_cand_analysis_df["job_title"]==delete_cand_job_title) &\
+                            (delete_cand_analysis_df["interview_no"]==delete_cand_interview_no)]["question_no"]
+            delete_ques_no = col35.selectbox("Question Number", list(delete_cand_questions))
+            delete_cand_interview_no = int(delete_cand_interview_no)
+            delete_cand_analysis = pd.DataFrame(get_one_analysis(comp_id, delete_cand_job_title, candindate_ID_delete, delete_cand_interview_no, delete_ques_no), columns=analysis_cols)
+            st.dataframe(delete_cand_analysis)
+            _, col36, _ = st.columns((8,3,7))
+            if col36.button('Delete analysis'):
+                delete_one_analysis(comp_id, delete_cand_job_title, candindate_ID_delete, delete_cand_interview_no, delete_ques_no)
+        
+        ###################### View analysis data #################################
         
 
         

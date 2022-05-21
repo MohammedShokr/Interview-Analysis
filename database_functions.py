@@ -123,6 +123,9 @@ def get_cand(cand_id):
 def update_cand(candidate_id_edit, candidate_name_edit, candidate_qual_edit):
     c.execute('UPDATE candidate SET cand_name=?, cand_qualifications=? WHERE cand_ID=?',\
                 (candidate_name_edit, candidate_qual_edit, candidate_id_edit))
+    conn.commit()
+    data = c.fetchall()
+    return data
 
 def add_candidate(cand_ID, cand_name, cand_qualifications):
     c.execute('''INSERT INTO candidate(cand_ID, cand_name, cand_qualifications)
@@ -184,6 +187,13 @@ def get_one_analysis(comp_ID, job_title, cand_ID, interview_no, question_no):
               interview_no=? AND question_no=?''', (comp_ID, job_title, cand_ID, interview_no, question_no))
     data = c.fetchall()
     return data
-    
+
+def update_one_analysis(comp_ID, job_title, cand_ID, interview_no, question_no, overall_score):
+    c.execute('UPDATE analysis SET overall_score=? WHERE comp_ID=? AND job_title=? AND cand_ID=? AND interview_no=? AND question_no=?',\
+                (overall_score, comp_ID, job_title, cand_ID, interview_no, question_no))
+    conn.commit()
+    data = c.fetchall()
+    return data
+
 #print(get_one_analysis('5', 'Area Sales Manager', '1', 1, 1))
 #delete_one_analysis('1', '5', 'Area Sales Manager', 1, 1)

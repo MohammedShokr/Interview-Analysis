@@ -139,3 +139,12 @@
 {
 	background-color: var(--bg-color);
 }
+
+
+
+#root > div:nth-child(1) > div > div > div > div > section > div > div:nth-child(1) > div > div:nth-child(12) > ul > li > div > div:nth-child(1) > div > div:nth-child(5) > div
+{
+	background-color: var(--section-color);
+	text-align: center;
+	
+}

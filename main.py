@@ -57,14 +57,16 @@ def navigation():
                 f2.writelines(f'{3}\n{"blabla"}')
             st.experimental_rerun()
     elif logged_in[0] == 3:
-        username = st.text_input("New username: ")
-        entered_pass = st.text_input("New Password: ", type="password")
+        # add_company(comp_ID, comp_name, comp_pass, website)
+        comp_ID = st.text_input("New username(comp_ID): ")
+        comp_name = st.text_input("Company Name: ")
+        comp_pass = st.text_input("New Password: ", type="password")
+        website = st.text_input("Company Website: ")
         but2 = st.button("Sign Up")
         if but2:
             with open("vars.txt", "w") as f2:
-                f2.writelines(f'{1}\n{username}')
-            with open("users.txt", "a") as f3:
-                f3.writelines(f'{username}-{entered_pass}\n')
+                f2.writelines(f'{1}\n{comp_ID}')
+            add_company(comp_ID, comp_name, comp_pass, website)
             st.experimental_rerun()
     elif logged_in[0] == 1:
         st.set_page_config(layout="wide", page_title='Interview-Analysis')
@@ -73,8 +75,8 @@ def navigation():
         utl.navbar_component(logged_in[1])
         utl.hide_row_index_css()
 
-        ### CSS
-        local_css("styles.css")
+        # ### CSS
+        # local_css("styles.css")
 
         ####
 

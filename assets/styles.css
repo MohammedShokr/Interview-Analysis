@@ -2,7 +2,7 @@
     font-family: 'Trebuchet MS', sans-serif;
     position: fixed;
     width: 100%;
-    background: #353535;
+    background: #1D5C63;
     z-index: 99999999999999999999;
     left: 0rem;
     top: 0rem;
@@ -61,11 +61,6 @@
     opacity:1;
 }
 
-.welcome {
-    position: fixed;
-    display: inline-block;
-    right: 5rem;
-}
 .dropdown {
     position: fixed;
     display: inline-block;

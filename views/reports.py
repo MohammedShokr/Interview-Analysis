@@ -7,8 +7,14 @@ import numpy as np
 
 # Get the top candidates in a certain job
 
-def load_view(comp_id):
+# ### css ###
+def local_css(file_name):
+    with open(file_name) as f:
+        st.markdown('<style>{}</style>'.format(f.read()), unsafe_allow_html=True)
 
+def load_view(comp_id):
+    ### CSS
+    local_css("styles.css")
     available_jobs = [job[0] for job in get_jobs_comp(comp_id)]
     metrics = ["overall_score", "FER_score", "tone_score", "fluency_score", "coherence_score"]
     jobs_cols = ["job_title", "job_req", "job_description", "comp_ID"]

@@ -2,6 +2,10 @@ import streamlit as st
 import utils as utl
 from views import home, data_mng, analysis, reports, logout
 from database_functions import *
+import webbrowser
+from bokeh.models.widgets import Div
+import streamlit as st
+
 
 #create_tables()
 #print(view_schema())
@@ -99,9 +103,13 @@ def navigation():
         elif route == "logout":
             with open("vars.txt", "w") as f2:
                 f2.writelines(f'{0}\n{"blabla"}')
-            st.experimental_rerun()
-            route = "home"
-            home.load_view()
+            #st.experimental_rerun()
+            #webbrowser.open("http://localhost:8501/", new=0)
+            js = "window.location.href = 'http://localhost:8501/'"  # Current tab
+            html = '<img src onerror="{}">'.format(js)
+            div = Div(text=html)
+            st.bokeh_chart(div)
+            
         elif route == None:
             home.load_view()
 

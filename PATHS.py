@@ -6,6 +6,5 @@ NAVBAR_PATHS = {
 }
 
 SETTINGS = {
-    'OPTIONS':'options',
-    'CONFIGURATION':'configuration'
+    'LOG OUT':'logout'
 }

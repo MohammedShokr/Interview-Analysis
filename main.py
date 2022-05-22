@@ -1,6 +1,6 @@
 import streamlit as st
 import utils as utl
-from views import home, data_mng, analysis, reports, options, configuration
+from views import home, data_mng, analysis, reports, logout
 from database_functions import *
 
 #create_tables()
@@ -80,12 +80,12 @@ def navigation():
 
         ####
 
-        col1, col2, col3 = st.columns((10,2,1))
-        but3 = col3.button("Logout")
-        if but3:
-            with open("vars.txt", "w") as f2:
-                f2.writelines(f'{0}\n{"blabla"}')
-            st.experimental_rerun()
+        # col1, col2, col3 = st.columns((10,2,1))
+        # but3 = col3.button("Logout")
+        # if but3:
+        #     with open("vars.txt", "w") as f2:
+        #         f2.writelines(f'{0}\n{"blabla"}')
+        #     st.experimental_rerun()
 
         route = utl.get_current_route()
         if route == "home":
@@ -96,10 +96,12 @@ def navigation():
             analysis.load_view(logged_in[1])
         elif route == "reports":
             reports.load_view(logged_in[1])
-        elif route == "options":
-            options.load_view()
-        elif route == "configuration":
-            configuration.load_view()
+        elif route == "logout":
+            with open("vars.txt", "w") as f2:
+                f2.writelines(f'{0}\n{"blabla"}')
+            st.experimental_rerun()
+            route = "home"
+            home.load_view()
         elif route == None:
             home.load_view()
 

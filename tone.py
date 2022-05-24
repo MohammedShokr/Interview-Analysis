@@ -106,7 +106,7 @@ def analyze_audio_segments(segments_folder_path, wav_num):
 
 
 def analyze_tone(audio_file):
-    wav_num = divide_audio(audio_file, "./tone_analysis/seg_result") #CHANGE PATH TO: "./tone_analysis/seg_result"
+    wav_num = divide_audio(audio_file, "./tone_analysis/seg_result", 5000, 3000) #CHANGE PATH TO: "./tone_analysis/seg_result"
     expression_matrix = analyze_audio_segments("./tone_analysis/seg_result", wav_num) #CHANGE PATH TO: "./tone_analysis/seg_result"
     expression_weights = np.mean(np.array(list(expression_matrix.values())), axis=0)
     score = scoring_tone_expressions(expression_weights)

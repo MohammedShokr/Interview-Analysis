@@ -86,7 +86,7 @@ def analyze_audio_segments(segments_folder_path, wav_num):
     return expression_matrix
 
 def analyze_fluency(audio_file):
-    wav_num = divide_audio(audio_file, "./fluency_analysis/seg_result") #CHANGE PATH TO: "./tone_analysis/seg_result"
+    wav_num = divide_audio(audio_file, "./fluency_analysis/seg_result", 5000, 3000) #CHANGE PATH TO: "./tone_analysis/seg_result"
     expression_matrix = analyze_audio_segments("./fluency_analysis/seg_result", wav_num) #CHANGE PATH TO: "./tone_analysis/seg_result"
     expression_weights = np.mean(np.array(list(expression_matrix.values())), axis=0)
     score = 1*expression_weights[0] + 5*expression_weights[1] + 10*expression_weights[2]

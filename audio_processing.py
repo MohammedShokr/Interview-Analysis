@@ -1,4 +1,7 @@
 import os
+import librosa
+import librosa.display
+import numpy as np
 from pydub import AudioSegment
 from moviepy.editor import *
 
@@ -29,6 +32,22 @@ def divide_audio(audio_path, output_folder_path, seg_len, stride):
     if remainder > 0:
         segment = my_audio[-seg_len//2:]
         segment.export(f'{output_folder_path}/wav_{wav_num}.wav', format="wav")
-    return wav_num
+    silence_percentage = analyze_silence_segments(output_folder_path, wav_num)
+    return wav_num, silence_percentage
 
 
+def analyze_silence_segments(segments_folder_path, wav_num):
+    energies = []
+    silent_count = 0
+    for i in range(0, wav_num):
+        audio_path = f'{segments_folder_path}/wav_{i+1}.wav'
+        data, sample_rate = librosa.load(audio_path)
+        rms = np.mean(librosa.feature.rms(y=data).T, axis=0)
+        print(rms[0])
+        energies.append(rms[0])
+    max_energy = max(energies)
+    threshold = 0.66*max_energy
+    for e in energies:
+        if e <= threshold:
+            silent_count += 1
+    return (silent_count/wav_num)*100  # percent of silence

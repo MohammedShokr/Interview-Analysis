@@ -1,6 +1,6 @@
 import streamlit as st
 import utils as utl
-from views import home, data_mng, analysis, reports, logout
+from views import home, data_mng, analysis, reports
 from database_functions import *
 import webbrowser
 from bokeh.models.widgets import Div

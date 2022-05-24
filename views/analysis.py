@@ -100,11 +100,16 @@ def load_view(comp_id):
                 with st.spinner("Facial expressions are being analyzed"):
                     FER_score, FER_matrix, FER_weights, total_frames = analyze_face(video_path)
                 
-                frames_flag = (len(FER_matrix.keys()))/(total_frames//30) < 0.75
+                frames_flag = (len(FER_matrix.keys()))/(total_frames//10) < 0.75
+                
+                try:
+                    print("percentage is ",100*(len(FER_matrix.keys())/(total_frames//10)))
+                except:
+                    pass
                 st.write(f'The score based on face expression analysis is: {FER_score} %')
                 st.progress(FER_score/100)
                 overall_score = FER_score
-            if "Tone Analysis" or "English Text Coherence" in selections:
+            if ("Tone Analysis" in selections) or ("English Text Coherence" in selections) or ("English Fluency Analysis" in selections):
                 audio_path = convert_video_to_audio(video_path)    
             if "Tone Analysis" in selections:
                 st.header("Tone")

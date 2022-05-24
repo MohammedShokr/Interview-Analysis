@@ -34,11 +34,11 @@ def compare_two_cands(comp_id, job_title, cand1, cand2, intv1, intv2, metric):
     return cand1_df[["question_no", metric]], cand2_df[["question_no", metric]]
 
 def candidate_evaluation(score):
-    if score>=90:
+    if score>=85:
         return "Excellent Candidate, Having very cood communication skills and is meeting your requirements"
-    elif score>=80:
+    elif score>=75:
         return "Very Good candidate, You can consider hiring him"
-    elif score>=70:
+    elif score>=65:
         return "Good candidate, with average performance"
     elif score>=50:
         return "The candidate has passed the minimal specified requirements"

@@ -1,6 +1,6 @@
 from keras.models import load_model
 import numpy as np
-from keras.preprocessing.image import img_to_array
+from tensorflow.keras.preprocessing.image import img_to_array
 import cv2
 
 model = load_model("./expression_analysis/model")
@@ -16,6 +16,8 @@ def scoring_expression(expression_weights):
         score += 5
     elif angry < 0.5:
         score += 1
+    else:
+        score -= 10
     disgust = expression_weights[1]
     if disgust < 0.1:
         score += 10
@@ -23,29 +25,35 @@ def scoring_expression(expression_weights):
         score += 5
     elif disgust < 0.5:
         score += 1
+    else:
+        score -= 7
     fear = expression_weights[2]
-    if fear < 0.1:
+    if fear < 0.25:
         score += 10
-    elif fear < 0.3:
+    elif fear < 0.4:
         score += 5
-    elif fear < 0.5:
+    elif fear < 0.6:
         score += 1
     happy = expression_weights[3]
     if happy < 0.1:
-        score += 1
-    elif happy < 0.3:
-        score += 5
-    elif happy < 0.6:
+        score -= 5
+    elif happy <0.3:
+        score += 3
+    elif happy < 0.5:
+        score += 7
+    elif happy < 0.7:
         score += 10
-    elif happy < 0.8:
+    elif happy < 0.85:
         score += 5
     else:
-        score += 1
+        score -= 5
     neutral = expression_weights[4]
     if neutral < 0.1:
-        score += 1
+        score -= 5
     elif neutral < 0.3:
         score += 5
+    elif neutral < 0.5:
+        score += 7
     elif neutral < 0.8:
         score += 10
     else:
@@ -57,6 +65,10 @@ def scoring_expression(expression_weights):
         score += 5
     elif sad < 0.5:
         score += 1
+    elif sad < 0.7:
+        score -= 3
+    else:
+        score -=7
     surprise = expression_weights[6]
     if surprise < 0.3:
         score += 10
@@ -85,6 +97,7 @@ def face_detector(img):
 
 
 def analyze_face(video_file):
+    labels= []
     cap = cv2.VideoCapture(video_file)
     c = 0
     expression_matrix = {}
@@ -96,7 +109,7 @@ def analyze_face(video_file):
         total_frames+=1
         if not ret:
             break
-        if c % 30 == 0:
+        if c % 10 == 0:
             rect, face, image = face_detector(frame)
             if np.sum([face]) != 0.0:
                 roi = face.astype("float") / 255.0
@@ -105,6 +118,7 @@ def analyze_face(video_file):
 
                 # make a prediction on the ROI, then lookup the class
                 preds = model.predict(roi)[0]
+                labels.append(class_labels[preds.argmax()])  
                 expression_matrix[frame_cnt]=preds.tolist()
                 frame_cnt += 1
 
@@ -112,6 +126,8 @@ def analyze_face(video_file):
     cv2.destroyAllWindows()
     expression_weights = np.mean(np.array(list(expression_matrix.values())), axis=0)
     score = scoring_expression(expression_weights)
+    most_common_label = max(labels, key = labels.count)
+    print(most_common_label)
     return score*10, expression_matrix, expression_weights, total_frames
 
 #print(analyze_face("./test_interviews/test1.mp4"))

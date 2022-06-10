@@ -1,0 +1,54 @@
+def scoring_tone_expressions(expression_weights):
+    score = 0
+    angry = expression_weights[0]
+    if angry < 0.1:
+        score += 10
+    elif angry < 0.3:
+        score += 5
+    elif angry < 0.5:
+        score += 1
+    else:
+        score -= 5
+
+    fear = expression_weights[1]
+    if fear < 0.25:
+        score += 10
+    elif fear < 0.4:
+        score += 5
+    elif fear < 0.6:
+        score += 1
+
+    happy = expression_weights[2]
+    if happy < 0.1:
+        score -= 5
+    elif happy < 0.3:
+        score += 3
+    elif happy < 0.5:
+        score += 10
+    elif happy < 0.7:
+        score += 5
+    elif happy < 0.85:
+        score += 1
+    else:
+        score -= 5
+
+    sad = expression_weights[3]
+    if sad < 0.2:
+        score += 10
+    elif sad < 0.3:
+        score += 5
+    elif sad < 0.5:
+        score += 1
+    elif sad < 0.7:
+        score -= 3
+    else:
+        score -=7
+
+    surprise = expression_weights[4]
+    if surprise < 0.3:
+        score += 10
+    elif surprise < 0.5:
+        score += 5
+    else:
+        score += 1
+    return round(score/5, 2)

@@ -7,47 +7,54 @@ from audio_processing import *
 
 
 def scoring_tone_expressions(expression_weights):
-    score = 0
-    angry = expression_weights[0]
-    if angry < 0.1:
-        score += 10
-    elif angry < 0.3:
-        score += 5
-    elif angry < 0.5:
-        score += 1
-    fear = expression_weights[1]
-    if fear < 0.1:
-        score += 10
-    elif fear < 0.3:
-        score += 5
-    elif fear < 0.5:
-        score += 1
-    happy = expression_weights[2]
-    if happy < 0.1:
-        score += 1
-    elif happy < 0.3:
-        score += 5
-    elif happy < 0.6:
-        score += 10
-    elif happy < 0.8:
-        score += 5
-    else:
-        score += 1
-    sad = expression_weights[3]
-    if sad < 0.2:
-        score += 10
-    elif sad < 0.3:
-        score += 5
-    elif sad < 0.5:
-        score += 1
-    surprise = expression_weights[4]
-    if surprise < 0.3:
-        score += 10
-    elif surprise < 0.5:
-        score += 5
-    else:
-        score += 1
-    return round(score/5, 2)
+    tones = expression_weights
+    # angry, fear, happy, sad, surprise #
+    score = -100*tones[0] - 191*tones[1] + 120*tones[2] + -44*tones[3] + 1137*tones[4] + 38
+    return round(score, 2)
+
+#
+# def scoring_tone_expressions(expression_weights):
+#     score = 0
+#     angry = expression_weights[0]
+#     if angry < 0.1:
+#         score += 10
+#     elif angry < 0.3:
+#         score += 5
+#     elif angry < 0.5:
+#         score += 1
+#     fear = expression_weights[1]
+#     if fear < 0.1:
+#         score += 10
+#     elif fear < 0.3:
+#         score += 5
+#     elif fear < 0.5:
+#         score += 1
+#     happy = expression_weights[2]
+#     if happy < 0.1:
+#         score += 1
+#     elif happy < 0.3:
+#         score += 5
+#     elif happy < 0.6:
+#         score += 10
+#     elif happy < 0.8:
+#         score += 5
+#     else:
+#         score += 1
+#     sad = expression_weights[3]
+#     if sad < 0.2:
+#         score += 10
+#     elif sad < 0.3:
+#         score += 5
+#     elif sad < 0.5:
+#         score += 1
+#     surprise = expression_weights[4]
+#     if surprise < 0.3:
+#         score += 10
+#     elif surprise < 0.5:
+#         score += 5
+#     else:
+#         score += 1
+#     return round(score/5, 2)
 
 
 def analyze_audio(audio_path):
@@ -106,8 +113,11 @@ def analyze_audio_segments(segments_folder_path, wav_num):
 
 
 def analyze_tone(audio_file):
-    wav_num = divide_audio(audio_file, "./tone_analysis/seg_result", 5000, 3000) #CHANGE PATH TO: "./tone_analysis/seg_result"
+    wav_num, silence = divide_audio(audio_file, "./tone_analysis/seg_result", 5000, 3000) #CHANGE PATH TO: "./tone_analysis/seg_result"
     expression_matrix = analyze_audio_segments("./tone_analysis/seg_result", wav_num) #CHANGE PATH TO: "./tone_analysis/seg_result"
     expression_weights = np.mean(np.array(list(expression_matrix.values())), axis=0)
     score = scoring_tone_expressions(expression_weights)
-    return score*10, expression_matrix, expression_weights
+    print(expression_matrix)
+    print("--------------")
+    print(expression_weights)
+    return score*10, expression_matrix, expression_weights, silence

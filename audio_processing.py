@@ -46,8 +46,19 @@ def analyze_silence_segments(segments_folder_path, wav_num):
         print(rms[0])
         energies.append(rms[0])
     max_energy = max(energies)
-    threshold = 0.66*max_energy
-    for e in energies:
+    zeros = 0
+    if max_energy*10 >= 1:
+        zeros = 1
+    if max_energy*100 >= 1:
+        zeros = 2
+    # #########
+    zeros += 1
+    integer_energies = [e*(10**zeros) for e in energies]
+    max_energy = max(integer_energies)
+    threshold = 0.68*max_energy
+    threshold = 17
+    for e in integer_energies:
+        print(f'lol: {e}')
         if e <= threshold:
             silent_count += 1
     return (silent_count/wav_num)*100  # percent of silence

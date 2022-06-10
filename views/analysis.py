@@ -114,10 +114,12 @@ def load_view(comp_id):
             if "Tone Analysis" in selections:
                 st.header("Tone")
                 with st.spinner("Tone expressions are being analyzed"):
-                    tone_score, tone_matrix, tone_weights = analyze_tone(audio_path)
+                    tone_score, tone_matrix, tone_weights, silence = analyze_tone(audio_path)
                 st.write(f'The score based on tone analysis is: {tone_score} %')
                 st.progress(tone_score/100)
                 overall_score = tone_score
+                if silence >= 50:
+                    st.warning(f'The interviewee was silent >= 50% of the time, Actual Percentage:{silence}%')
                 
             if "English Fluency Analysis" in selections:
                 st.header("Fluency")

@@ -20,7 +20,7 @@ def load_view(comp_id):
     overall_score = 0
     fer_weight = 0
     tone_weight = 0
-    fluency_weight =0
+    fluency_weight = 0
     coherence_weight = 0
     FER_matrix = {}
     tone_matrix = {}
@@ -37,7 +37,7 @@ def load_view(comp_id):
                 tone_weight = st.slider('Tone analysis weight', 0, 100, 50)
             if "English Fluency Analysis" in selections:
                 fluency_weight = st.slider('Fluency analysis weight', 0, 100, 50)
-            if "English Text Coherence" in selections:
+            if "English Topic Coherence" in selections:
                 coherence_weight = st.slider('English coherence weight', 0, 100, 50)
         reportBx = st.checkbox("Generate detailed report")
         addAnalysisBx = st.checkbox("Add Analysis results to database")
@@ -109,7 +109,7 @@ def load_view(comp_id):
                 st.write(f'The score based on face expression analysis is: {FER_score} %')
                 st.progress(FER_score/100)
                 overall_score = FER_score
-            if ("Tone Analysis" in selections) or ("English Text Coherence" in selections) or ("English Fluency Analysis" in selections):
+            if ("Tone Analysis" in selections) or ("English Topic Coherence" in selections) or ("English Fluency Analysis" in selections):
                 audio_path = convert_video_to_audio(video_path)    
             if "Tone Analysis" in selections:
                 st.header("Tone")

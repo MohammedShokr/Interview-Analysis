@@ -120,4 +120,4 @@ def analyze_tone(audio_file):
     print(expression_matrix)
     print("--------------")
     print(expression_weights)
-    return score, expression_matrix, expression_weights, silence
+    return score/10, expression_matrix, expression_weights, silence

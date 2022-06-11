@@ -10,9 +10,10 @@ from audio_processing import *
 
 # NLTK Stop words
 stop_words = stopwords.words('english')
-stop_words.extend(['from', 'subject', 're', 'edu', 'use'])
+stop_words.extend(['from', 'subject', 're', 'edu', 'use'])  #adding more stop words
 
 def coherence_scoring(text, num_topics=5):
+    # split sentences into words
     data_words = nltk.word_tokenize(text)
 
     # Build the bigram and trigram models
@@ -25,15 +26,19 @@ def coherence_scoring(text, num_topics=5):
 
     # Define functions for stopwords, bigrams, trigrams and lemmatization
     def make_bigrams(texts):
+        # make bigrams of the words in the text
         return [bigram_mod[doc] for doc in texts]
 
     def make_trigrams(texts):
+        # make trigrams of the words in the text
         return [trigram_mod[bigram_mod[doc]] for doc in texts]
 
     def remove_stopwords(texts):
+        # removing stopwords
         return [[word for word in simple_preprocess(str(doc)) if word not in stop_words] for doc in texts]
 
     def lemmatization(texts, allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV']):
+        # apply lemmatization to words if it is one of the allowed tags defined
         """https://spacy.io/api/annotation"""
         texts_out = []
         for sent in texts:
@@ -62,6 +67,7 @@ def coherence_scoring(text, num_topics=5):
     # Term Document Frequency
     corpus = [id2word.doc2bow(text) for text in texts]
 
+    # Build the lda model
     lda_model = gensim.models.LdaModel(corpus=corpus,
                                            id2word=id2word,
                                            num_topics=num_topics,
@@ -70,6 +76,7 @@ def coherence_scoring(text, num_topics=5):
                                            passes=10,
                                            alpha=0.01,
                                            eta=0.9)
+    
     # Compute Coherence Score
     coherence_model_lda = CoherenceModel(model=lda_model, texts=data_lemmatized, dictionary=id2word, coherence='c_v')
     coherence_lda = coherence_model_lda.get_coherence()

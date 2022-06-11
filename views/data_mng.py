@@ -81,14 +81,15 @@ def load_view(comp_id):
         
         st.subheader("Edit Candidate data")
         col17,col18 = st.columns(2)
-        candidate_id_edit = col17.text_input("Enter the candidate's ID", 1)
-        try:
-            selected_cand_details = get_cand(candidate_id_edit)[0]
-            candidate_name_edit = col18.text_input("Updated candidate name", selected_cand_details[1])
-            candidate_qual_edit = st.text_input("Updated candidate qualifications", selected_cand_details[2])
-        except:
-            st.error("You entered a non-valid candidate ID")
-        
+        candidate_id_edit = col17.text_input("Enter the candidate's ID")
+        if candidate_id_edit:
+            try:
+                selected_cand_details = get_cand(candidate_id_edit)[0]
+                candidate_name_edit = col18.text_input("Updated candidate name", selected_cand_details[1])
+                candidate_qual_edit = st.text_input("Updated candidate qualifications", selected_cand_details[2])
+            except:
+                st.error("You entered a non-valid candidate ID")
+            
         col19, col20, col21 = st.columns((8,3,7))
         if col20.button("Edit Candidate"):
             update_cand(candidate_id_edit, candidate_name_edit, candidate_qual_edit)
@@ -103,45 +104,47 @@ def load_view(comp_id):
         st.markdown("Choose analysis data to tune the needed weights")
         col22, col23 = st.columns(2)
         candindate_ID = col22.text_input("Enter Candidate's National ID")
-        cand_analysis_df = pd.DataFrame(get_analysis_with_cand(comp_id, candindate_ID), columns=analysis_cols)
-        cand_jobs = cand_analysis_df["job_title"].unique()
-        cand_job_title = col23.selectbox("Choose a Job title", cand_jobs)
-        cand_interviews = cand_analysis_df[cand_analysis_df["job_title"]==cand_job_title]["interview_no"]
-        cand_interview_no = col22.selectbox("Select an Interview", cand_interviews.unique())
-        cand_questions = cand_analysis_df[(cand_analysis_df["job_title"]==cand_job_title) &\
-                        (cand_analysis_df["interview_no"]==cand_interview_no)]["question_no"]
-        ques_no = col23.selectbox("Select Question no.", list(cand_questions))
-        cand_interview_no = int(cand_interview_no)
-        cand_analysis = pd.DataFrame(get_one_analysis(comp_id, cand_job_title, candindate_ID, cand_interview_no, ques_no), columns=analysis_cols)
-        
-        st.markdown("Adjust weights to change the effective overall score")
-        col24, col25 = st.columns((10, 3))
-        fer_weight = col24.slider('FER weight', 0, 100, 50)
-        FER_score = col25.text_input('FER Score %', cand_analysis['FER_score'][0], disabled=True)
-        
-        col26, col27 = st.columns((10, 3))
-        tone_weight = col26.slider('Tone analysis weight', 0, 100, 50)
-        tone_score = col27.text_input('Tone analysis Score %', cand_analysis['tone_score'][0], disabled=True)
-        
-        col28, col29 = st.columns((10, 3))
-        fluency_weight = col28.slider('Fluency analysis weight', 0, 100, 50)
-        fluency_score = col29.text_input('Fluency analysis Score %', cand_analysis['fluency_score'][0], disabled=True)
-        
-        col30, col31 = st.columns((10, 3))
-        coherence_weight = col30.slider('English Topic coherence weight', 0, 100, 50)
-        coherence_score = col31.text_input('Topic coherence Score %', round(100*cand_analysis['coherence_score'][0]), disabled=True)
-        
-        _, col32, _, col33, _ = st.columns((1, 5, 0.5, 3, 1))
-        overall_score = ((0.01*fer_weight*cand_analysis['FER_score'][0])+\
-            (0.01*tone_weight*cand_analysis['tone_score'][0])+\
-            (0.01*fluency_weight*cand_analysis['fluency_score'][0])+\
-            (coherence_weight*cand_analysis['coherence_score'][0]))/\
-            (0.01*fer_weight+0.01*tone_weight+0.01*fluency_weight+0.01*coherence_weight)
-        overall_score = col32.text_input('The newly calulated overall score %', round(overall_score,2), disabled=True)
-        col33.markdown("\n")
-        col33.markdown("\n")
-        if col33.button('Update Analysis'):
-            update_one_analysis(comp_id, cand_job_title, candindate_ID, cand_interview_no, ques_no, overall_score)
+        if candindate_ID:
+            cand_analysis_df = pd.DataFrame(get_analysis_with_cand(comp_id, candindate_ID), columns=analysis_cols)
+            cand_jobs = cand_analysis_df["job_title"].unique()
+            cand_job_title = col23.selectbox("Choose a Job title", cand_jobs)
+            cand_interviews = cand_analysis_df[cand_analysis_df["job_title"]==cand_job_title]["interview_no"]
+            cand_interview_no = col22.selectbox("Select an Interview", cand_interviews.unique())
+            cand_questions = cand_analysis_df[(cand_analysis_df["job_title"]==cand_job_title) &\
+                            (cand_analysis_df["interview_no"]==cand_interview_no)]["question_no"]
+            ques_no = col23.selectbox("Select Question no.", list(cand_questions))
+            cand_interview_no = int(cand_interview_no)
+            cand_analysis = pd.DataFrame(get_one_analysis(comp_id, cand_job_title, candindate_ID, cand_interview_no, ques_no), columns=analysis_cols)
+            
+            st.markdown("Adjust weights to change the effective overall score")
+            col24, col25 = st.columns((10, 3))
+            fer_weight = col24.slider('FER weight', 0, 100, 50)
+            FER_score = col25.text_input('FER Score %', cand_analysis['FER_score'][0], disabled=True)
+            
+            col26, col27 = st.columns((10, 3))
+            tone_weight = col26.slider('Tone analysis weight', 0, 100, 50)
+            tone_score = col27.text_input('Tone analysis Score %', cand_analysis['tone_score'][0], disabled=True)
+            
+            col28, col29 = st.columns((10, 3))
+            fluency_weight = col28.slider('Fluency analysis weight', 0, 100, 50)
+            fluency_score = col29.text_input('Fluency analysis Score %', cand_analysis['fluency_score'][0], disabled=True)
+            
+            col30, col31 = st.columns((10, 3))
+            coherence_weight = col30.slider('English Topic coherence weight', 0, 100, 50)
+            coherence_score = col31.text_input('Topic coherence Score %', round(100*cand_analysis['coherence_score'][0]), disabled=True)
+            
+            _, col32, _, col33, _ = st.columns((1, 5, 0.5, 3, 1))
+            overall_score = ((0.01*fer_weight*cand_analysis['FER_score'][0])+\
+                (0.01*tone_weight*cand_analysis['tone_score'][0])+\
+                (0.01*fluency_weight*cand_analysis['fluency_score'][0])+\
+                (coherence_weight*cand_analysis['coherence_score'][0]))/\
+                (0.01*fer_weight+0.01*tone_weight+0.01*fluency_weight+0.01*coherence_weight)
+            overall_score = col32.text_input('The newly calulated overall score %', round(overall_score,2), disabled=True)
+            col33.markdown("\n")
+            col33.markdown("\n")
+            if col33.button('Update Analysis'):
+                update_one_analysis(comp_id, cand_job_title, candindate_ID, cand_interview_no, ques_no, overall_score)
+                st.success("The analysis data is successfully updated!")
                
         ########################### Delete Analysis Data ######################## 
         st.subheader("Delete Analysis")

@@ -23,9 +23,9 @@ def short_speech_to_text(AUDIO_FILE):
 
 
 def long_speech_to_text(AUDIO_FILE, OUT_PATH):
-    wav_num, _ = divide_audio(AUDIO_FILE, OUT_PATH, 5000, 3000)
+    wav_num, _ = divide_audio(AUDIO_FILE, OUT_PATH, 5000, 3000)  # divide the audio into shorter instances
     text = ""
     for i in range(1, wav_num):
         audio_path = f'{OUT_PATH}/wav_{i}.wav'
-        text += str(short_speech_to_text(audio_path)) + "\n"
+        text += str(short_speech_to_text(audio_path)) + "\n"  # convert each intance to text
     return text

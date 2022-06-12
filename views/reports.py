@@ -14,7 +14,7 @@ def local_css(file_name):
 
 def load_view(comp_id):
     ### CSS
-    local_css("styles.css")
+    local_css("styles_reports.css")
     available_jobs = [job[0] for job in get_jobs_comp(comp_id)]
     metrics = ["overall_score", "FER_score", "tone_score", "fluency_score", "coherence_score"]
     jobs_cols = ["job_title", "job_req", "job_description", "comp_ID"]

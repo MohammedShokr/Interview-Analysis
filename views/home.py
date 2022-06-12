@@ -2,7 +2,14 @@ from typing import Container
 import streamlit as st
 from PIL import Image
 
+
+# ### css ###
+def local_css(file_name):
+    with open(file_name) as f:
+        st.markdown('<style>{}</style>'.format(f.read()), unsafe_allow_html=True)
+
 def load_view():
+   local_css("styles_home.css")
    col1, col2 = st.columns(2)
    with st.container():
       col1.title("Choose skills; Not Identity.")

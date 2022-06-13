@@ -71,11 +71,16 @@ def load_view(comp_id):
         col9, col10, col11 = st.columns((6,6,2))   # styling button alignment
         if len(available_jobs):
             selected_job_delete = col9.selectbox("Choose a Job Title to delete", available_jobs) # menu of available job titles to delete 
-            if col11.button("Delete Job"):
+            analysis_job_df = pd.DataFrame(get_analysis_with_job(comp_id, job_title), columns=analysis_cols)
+            if not analysis_job_df.empty:
+                st.markdown("Watch out! This job has the following accompanied analysis results.")
+                st.dataframe(analysis_job_df)
+            col37, col38, col39 = st.columns((8, 3, 7))
+            if col38.button("Delete Job"):
                 try:
                     delete_job(selected_job_delete, comp_id)  #delete a job with the given title
                     st.success("deleted the {} job successfully".format(selected_job_delete)) # success message
-                except :
+                except:
                     # printing an error message if the job was not deleted
                     st.error("This shouldnot happen!!!!!!!")
         else:
@@ -146,55 +151,93 @@ def load_view(comp_id):
         if candindate_ID:
             # getting all analysis of that candidate and load it into a dataframe
             cand_analysis_df = pd.DataFrame(get_analysis_with_cand(comp_id, candindate_ID), columns=analysis_cols)
-            cand_jobs = cand_analysis_df["job_title"].unique() # get the jobs he applied for
-            cand_job_title = col23.selectbox("Choose a Job title", cand_jobs)  # selection menu of avalible jobs the candidate applied for
-            cand_interviews = cand_analysis_df[cand_analysis_df["job_title"]==cand_job_title]["interview_no"] # get all the interview numbers the candidate did for that job
-            cand_interview_no = col22.selectbox("Select an Interview", cand_interviews.unique()) # selelct an interview menu creation
-            cand_questions = cand_analysis_df[(cand_analysis_df["job_title"]==cand_job_title) &\
-                            (cand_analysis_df["interview_no"]==cand_interview_no)]["question_no"] # get the question no. that has results
-            ques_no = col23.selectbox("Select Question no.", list(cand_questions)) # create the selection menu of the available qustions
-            cand_interview_no = int(cand_interview_no) #cast the type of the interview no. into int
-            # get the analysis result according to user selection, and load it into a dataframe.
-            cand_analysis = pd.DataFrame(get_one_analysis(comp_id, cand_job_title, candindate_ID, cand_interview_no, ques_no), columns=analysis_cols)
-            
-            st.markdown("Adjust weights to change the effective overall score") # Inform the user to edit the desired scores
-            
-            # slider tuning of the FER score
-            col24, col25 = st.columns((10, 3))
-            fer_weight = col24.slider('FER weight', 0, 100, 50)
-            FER_score = col25.text_input('FER Score %', cand_analysis['FER_score'][0], disabled=True)
-            
-            # slider tuning of the tone score
-            col26, col27 = st.columns((10, 3))
-            tone_weight = col26.slider('Tone analysis weight', 0, 100, 50)
-            tone_score = col27.text_input('Tone analysis Score %', cand_analysis['tone_score'][0], disabled=True)
-            
-            # slider tuning of the fluency score
-            col28, col29 = st.columns((10, 3))
-            fluency_weight = col28.slider('Fluency analysis weight', 0, 100, 50)
-            fluency_score = col29.text_input('Fluency analysis Score %', cand_analysis['fluency_score'][0], disabled=True)
-            
-            # slider tuning of the coherence score
-            col30, col31 = st.columns((10, 3))
-            coherence_weight = col30.slider('English Topic coherence weight', 0, 100, 50)
-            coherence_score = col31.text_input('Topic coherence Score %', round(100*cand_analysis['coherence_score'][0]), disabled=True)
-            
-            # Recalculate the ooverall score according to the new used weights, and view it
-            _, col32, _, col33, _ = st.columns((1, 5, 0.5, 3, 1))
-            overall_score = ((0.01*fer_weight*cand_analysis['FER_score'][0])+\
-                (0.01*tone_weight*cand_analysis['tone_score'][0])+\
-                (0.01*fluency_weight*cand_analysis['fluency_score'][0])+\
-                (coherence_weight*cand_analysis['coherence_score'][0]))/\
-                (0.01*fer_weight+0.01*tone_weight+0.01*fluency_weight+0.01*coherence_weight)
-            overall_score = col32.text_input('The newly calulated overall score %', round(overall_score,2), disabled=True)
-            col33.markdown("\n")
-            col33.markdown("\n")
-            if col33.button('Update Analysis'):  # update the analysis result according to the new adjusted weights
-                update_one_analysis(comp_id, cand_job_title, candindate_ID, cand_interview_no, ques_no, overall_score)
-                st.success("The analysis data is successfully updated!") # success message
-               
-        ########################### Delete Analysis Data ######################## 
-        st.subheader("Delete Analysis")
+            if not cand_analysis_df.empty:
+                cand_jobs = cand_analysis_df["job_title"].unique() # get the jobs he applied for
+                cand_job_title = col23.selectbox("Choose a Job title", cand_jobs)  # selection menu of avalible jobs the candidate applied for
+                cand_interviews = cand_analysis_df[cand_analysis_df["job_title"]==cand_job_title]["interview_no"] # get all the interview numbers the candidate did for that job
+                cand_interview_no = col22.selectbox("Select an Interview", cand_interviews.unique()) # selelct an interview menu creation
+                cand_questions = cand_analysis_df[(cand_analysis_df["job_title"]==cand_job_title) &\
+                                (cand_analysis_df["interview_no"]==cand_interview_no)]["question_no"] # get the question no. that has results
+                ques_no = col23.selectbox("Select Question no.", list(cand_questions)) # create the selection menu of the available qustions
+                cand_interview_no = int(cand_interview_no) #cast the type of the interview no. into int
+                # get the analysis result according to user selection, and load it into a dataframe.
+                cand_analysis = pd.DataFrame(get_one_analysis(comp_id, cand_job_title, candindate_ID, cand_interview_no, ques_no), columns=analysis_cols)
+                
+                st.markdown("Adjust weights to change the effective overall score") # Inform the user to edit the desired scores
+                
+                # slider tuning of the FER score
+                col24, col25 = st.columns((10, 3))
+                fer_weight = col24.slider('FER weight', 0, 100, 50)
+                FER_score = col25.text_input('FER Score %', cand_analysis['FER_score'][0], disabled=True)
+                
+                # slider tuning of the tone score
+                col26, col27 = st.columns((10, 3))
+                tone_weight = col26.slider('Tone analysis weight', 0, 100, 50)
+                tone_score = col27.text_input('Tone analysis Score %', cand_analysis['tone_score'][0], disabled=True)
+                
+                # slider tuning of the fluency score
+                col28, col29 = st.columns((10, 3))
+                fluency_weight = col28.slider('Fluency analysis weight', 0, 100, 50)
+                fluency_score = col29.text_input('Fluency analysis Score %', cand_analysis['fluency_score'][0], disabled=True)
+                
+                # slider tuning of the coherence score
+                col30, col31 = st.columns((10, 3))
+                coherence_weight = col30.slider('English Topic coherence weight', 0, 100, 50)
+                coherence_score = col31.text_input('Topic coherence Score %', round(100*cand_analysis['coherence_score'][0]), disabled=True)
+                
+                # Recalculate the ooverall score according to the new used weights, and view it
+                _, col32, _, col33, _ = st.columns((1, 5, 0.5, 3, 1))
+                overall_score = ((0.01*fer_weight*cand_analysis['FER_score'][0])+\
+                    (0.01*tone_weight*cand_analysis['tone_score'][0])+\
+                    (0.01*fluency_weight*cand_analysis['fluency_score'][0])+\
+                    (coherence_weight*cand_analysis['coherence_score'][0]))/\
+                    (0.01*fer_weight+0.01*tone_weight+0.01*fluency_weight+0.01*coherence_weight)
+                overall_score = col32.text_input('The newly calulated overall score %', round(overall_score,2), disabled=True)
+                col33.markdown("\n")
+                col33.markdown("\n")
+                if col33.button('Update Analysis'):  # update the analysis result according to the new adjusted weights
+                    update_one_analysis(comp_id, cand_job_title, candindate_ID, cand_interview_no, ques_no, overall_score)
+                    st.success("The analysis data is successfully updated!") # success message
+            else:
+                st.info("This candidate does not have any analysis result")
+        ########################### Delete Analysis results of a candidate ######################## 
+        st.subheader("Delete all analysis result of a candidate")
+        col40, col41 = st.columns(2)
+        all_candindate_ID_delete = col40.text_input("Enter Candidate's National ID to delete its analysis", max_chars = 14)  # textbox to enter candidate id to delete its results data
+        # getting all analysis result of that candidate and load it into a dataframe
+        delete_all_cand_analysis_df = pd.DataFrame(get_analysis_with_cand(comp_id, all_candindate_ID_delete), columns=analysis_cols)
+        if not delete_all_cand_analysis_df.empty:
+            st.dataframe(delete_all_cand_analysis_df)
+            _, col42, _ = st.columns((8,5,7))     # styling button alignment
+            if col42.button('Delete candidate analysis'): # delete the selected analysis result
+                if all_candindate_ID_delete:
+                    delete_analysis_cand(all_candindate_ID_delete, comp_id)
+                    st.success("Analysis results of the selected candidate has been successfully deleted")
+                else:
+                    st.error("Enter a valid candidate ID")
+        elif all_candindate_ID_delete:
+            st.info("This candidate does not have any analysis result")
+        ########################### Delete Analysis results of a job ######################## 
+        st.subheader("Delete all analysis result of a certain job")
+        col43, col44 = st.columns(2)
+        available_analysis_jobs = pd.DataFrame(view_analysis_data(), columns=analysis_cols)['job_title'].unique()
+        if len(available_analysis_jobs):
+            all_job_title_delete = col43.selectbox("Choose a job title to delete its analysis", available_analysis_jobs)  # textbox to enter candidate id to delete its results data
+            # getting all analysis result of that job and load it into a dataframe
+            delete_all_job_analysis_df = pd.DataFrame(get_analysis_with_job(comp_id, all_job_title_delete), columns=analysis_cols)
+            st.markdown("Watch out! This analysis result is about to be deleted.")
+            st.dataframe(delete_all_job_analysis_df)
+            _, col45, _ = st.columns((8,5,7))     # styling button alignment
+            if col45.button('Delete job analysis'): # delete the selected analysis result
+                if all_job_title_delete:
+                    delete_analysis_job(comp_id, all_job_title_delete)
+                    st.success("Analysis results of the selected job has been successfully deleted")
+                else:
+                    st.error("This should not happen!!!!")
+        else:
+            st.info("No analysis results related to your jobs to be deleted")
+        ########################### Delete one Analysis record ######################## 
+        st.subheader("Delete one analysis record")
         col34, col35 = st.columns(2)
         candindate_ID_delete = col34.text_input("Candidate's National ID", max_chars = 14)  # textbox to enter candidate id to delete its results data
         # getting all analysis result of that candidate and load it into a dataframe
@@ -214,7 +257,8 @@ def load_view(comp_id):
             _, col36, _ = st.columns((8,3,7))     # styling button alignment
             if col36.button('Delete analysis'): # delete the selected analysis result
                 delete_one_analysis(comp_id, delete_cand_job_title, candindate_ID_delete, delete_cand_interview_no, delete_ques_no)
-        
+        elif candindate_ID_delete:
+            st.info("This candidate does not have any analysis result")
         ###################### View analysis data #################################
         with st.expander("View all analysis"):
             colex7, colex8, colex9 = st.columns((1,10,1))

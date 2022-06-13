@@ -121,6 +121,7 @@ def update_job(job_title, comp_id, job_req, job_description):
 
 def delete_job(job_title, comp_id):
     # delete a certain job
+    delete_analysis_job(comp_id, job_title)
     c.execute('''DELETE FROM job WHERE job_title=? AND comp_ID=?''',\
         (job_title, comp_id))
     conn.commit()
@@ -171,9 +172,9 @@ def delete_one_analysis(comp_ID, job_title, cand_ID, interview_no, question_no):
               interview_no=? AND question_no=?''', (cand_ID, comp_ID, job_title, interview_no, question_no))
     conn.commit()
     
-def delete_analysis_cand(cand_ID):
+def delete_analysis_cand(cand_ID, comp_id):
     # delete all analysis data linked to a certain candidate
-    c.execute('''DELETE FROM analysis WHERE cand_ID=? ''', (cand_ID))
+    c.execute('''DELETE FROM analysis WHERE cand_ID=? AND comp_ID=? ''', (cand_ID, comp_id))
     conn.commit()
     
 def delete_analysis_job(comp_ID, job_title):

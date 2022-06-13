@@ -48,14 +48,14 @@ def load_view(comp_id):
 
     if addAnalysisBx:
         st.header("Interview-related Data")
-        curr_cand_id = st.text_input("Ender your candidate National ID", "1")
+        curr_cand_id = st.text_input("Ender your candidate National ID", "1", max_chars = 14)
         curr_cand_data = get_cand(curr_cand_id)
         if not curr_cand_data:
             st.error('A candidate of this ID is not in the database')
             with st.expander("Add a new candidate"):
                 add_cand_form = st.form(key='add_candidate')
                 cand_name = add_cand_form.text_input("Enter Candidate's name")
-                cand_id = add_cand_form.text_input("Ender candidate National ID")
+                cand_id = add_cand_form.text_input("Ender candidate National ID", max_chars = 14)
                 cand_qualifications = add_cand_form.text_input("Enter candidate's qualification")
                 add_cand_btn = add_cand_form.form_submit_button('Add Candidate')
             if add_cand_btn:

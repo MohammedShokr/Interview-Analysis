@@ -35,6 +35,7 @@ def load_view(comp_id):
             try:
                 add_job(job_title, job_req, job_description, comp_id)   #database fuction call to add the job
                 st.success("Added the {} job to Jobs".format(job_title)) # success message
+            
             except :
                 # printing an error message if the job was not added to the database
                 st.error("This job details is already there! Enter a valid job title that is not already there")
@@ -45,8 +46,8 @@ def load_view(comp_id):
         if len(available_jobs):  # only make it available if the company has any jobs to edit
             selected_job_edit = st.selectbox("Choose a Job Title to edit", available_jobs) # select the job title to edt its info
             selected_job_details = get_job(selected_job_edit, comp_id)[0] # get the job details of the the selected title, from database functions
-            job_req = st.text_input("Job requirements", selected_job_details[1]) # editable textbox viewing current job requirements
-            job_description = st.text_input("Job description", selected_job_details[2])  # editable textbox viewing current job description
+            job_req = st.text_input("Updated job requirements", selected_job_details[1]) # editable textbox viewing current job requirements
+            job_description = st.text_input("Updated job description", selected_job_details[2])  # editable textbox viewing current job description
             col6, col7, col8 = st.columns((8,3,7))  # styling button alignment
             if col7.button("Update Job"):
                 try:
@@ -84,7 +85,7 @@ def load_view(comp_id):
         ################### Add new candidate ###############
         st.subheader("Add Candidate")
         col12,col13 = st.columns(2)
-        candidate_id = col12.text_input("Enter candidate's ID")  # text input of candidate ID to add
+        candidate_id = col12.text_input("Enter candidate's ID", max_chars = 14)  # text input of candidate ID to add
         candidate_name = col13.text_input("Enter Candidate's name") # text input of candidate name to add
         candidate_qual = st.text_input("Candidate qualifications") # text input of candidate qalufications to add
         
@@ -98,7 +99,7 @@ def load_view(comp_id):
         ################### Edit candidate data ###################
         st.subheader("Edit Candidate data")
         col17,col18 = st.columns(2)
-        candidate_id_edit = col17.text_input("Enter the candidate's ID") # text input to enter the candidate to be edited
+        candidate_id_edit = col17.text_input("Enter the candidate's ID", max_chars = 14) # text input to enter the candidate to be edited
         if candidate_id_edit:
             try:
                 selected_cand_details = get_cand(candidate_id_edit)[0]   # get the candidates details to be easily edited
@@ -127,7 +128,7 @@ def load_view(comp_id):
         st.subheader("Edit Analysis data")
         st.markdown("Choose analysis data to tune the needed weights")
         col22, col23 = st.columns(2)
-        candindate_ID = col22.text_input("Enter Candidate's National ID") # enter the candidate id to update its analysis results
+        candindate_ID = col22.text_input("Enter Candidate's National ID", max_chars = 14) # enter the candidate id to update its analysis results
         if candindate_ID:
             # getting all analysis of that candidate and load it into a dataframe
             cand_analysis_df = pd.DataFrame(get_analysis_with_cand(comp_id, candindate_ID), columns=analysis_cols)
@@ -181,7 +182,7 @@ def load_view(comp_id):
         ########################### Delete Analysis Data ######################## 
         st.subheader("Delete Analysis")
         col34, col35 = st.columns(2)
-        candindate_ID_delete = col34.text_input("Candidate's National ID")  # textbox to enter candidate id to delete its results data
+        candindate_ID_delete = col34.text_input("Candidate's National ID", max_chars = 14)  # textbox to enter candidate id to delete its results data
         # getting all analysis result of that candidate and load it into a dataframe
         delete_cand_analysis_df = pd.DataFrame(get_analysis_with_cand(comp_id, candindate_ID_delete), columns=analysis_cols)
         if not delete_cand_analysis_df.empty:

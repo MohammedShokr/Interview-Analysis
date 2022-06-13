@@ -78,11 +78,11 @@ def load_view(comp_id):
             st.text("")
             job_title_compare = st.selectbox("Choose job", available_jobs)
             metric_compare = st.selectbox("Comparison metric", metrics)
-            cand1 = st.text_input("First candidate's National ID")
+            cand1 = st.text_input("First candidate's National ID", max_chars = 14)
             cand1_analysis_df = pd.DataFrame(get_analysis_with_cand(comp_id, cand1), columns=analysis_cols)
             cand1_interviews = cand1_analysis_df[cand1_analysis_df["job_title"]==job_title_compare]["interview_no"]
             intv1 = st.selectbox("Select an Interview for the first candidate", cand1_interviews.unique())
-            cand2 = st.text_input("Second candidate's National ID")
+            cand2 = st.text_input("Second candidate's National ID", max_chars = 14)
             cand2_analysis_df = pd.DataFrame(get_analysis_with_cand(comp_id, cand2), columns=analysis_cols)
             cand2_interviews = cand2_analysis_df[cand2_analysis_df["job_title"]==job_title_compare]["interview_no"]
             intv2 = st.selectbox("Select an Interview for the second candidate", cand2_interviews.unique())
@@ -144,7 +144,7 @@ def load_view(comp_id):
     with st.expander("Individual Report"):
         col1, col2 = st.columns((2, 7))
         with col1:
-            candindate_ID = st.text_input("Write the Candidate's National ID")
+            candindate_ID = st.text_input("Write the Candidate's National ID", max_chars = 14)
         if candindate_ID:
             st.subheader("General Insights")
             # col1, col2, col3 = st.columns((2, 6, 2))
@@ -360,7 +360,7 @@ def load_view(comp_id):
 
         col8_spacer1, col8_1, col8_spacer2, col8_2, col8_spacer3  = st.columns((.2, 2.3, .4, 4.4, .2))
         with col8_1:
-            candindate_id = st.text_input("Write Candidate National ID")
+            candindate_id = st.text_input("Write Candidate National ID", max_chars = 14)
         with col8_2:
             analysis_candidate_df = pd.DataFrame(get_analysis_with_cand(comp_id, candindate_id), columns=analysis_cols)
             st.dataframe(analysis_candidate_df[analysis_cols[2:]])

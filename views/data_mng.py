@@ -1,4 +1,5 @@
 from faulthandler import disable
+from logging import exception
 from pickle import TRUE
 import streamlit as st
 import pandas as pd
@@ -32,17 +33,21 @@ def load_view(comp_id):
         
         col3, col4, col5 = st.columns((8,3,7))
         if col4.button("Add Job"):    # add job button method
-            try:
-                add_job(job_title, job_req, job_description, comp_id)   #database fuction call to add the job
-                st.success("Added the {} job to Jobs".format(job_title)) # success message
-            
-            except :
-                # printing an error message if the job was not added to the database
-                st.error("This job details is already there! Enter a valid job title that is not already there")
+            if job_title:
+                try:
+                    add_job(job_title, job_req, job_description, comp_id)   #database fuction call to add the job
+                    st.success("Added the {} job to Jobs".format(job_title)) # success message
+                
+                except :
+                    # printing an error message if the job was not added to the database
+                    st.error("This job details is already there! Enter a valid job title that is not already there")
+            else:
+                st.error("Enter a valid job title!")
         
         ################ Edit job #####################
         st.subheader("Edit Jobs data")
         
+        available_jobs = [job[0] for job in get_jobs_comp(comp_id)]  # all job titles this company have
         if len(available_jobs):  # only make it available if the company has any jobs to edit
             selected_job_edit = st.selectbox("Choose a Job Title to edit", available_jobs) # select the job title to edt its info
             selected_job_details = get_job(selected_job_edit, comp_id)[0] # get the job details of the the selected title, from database functions
@@ -50,12 +55,14 @@ def load_view(comp_id):
             job_description = st.text_input("Updated job description", selected_job_details[2])  # editable textbox viewing current job description
             col6, col7, col8 = st.columns((8,3,7))  # styling button alignment
             if col7.button("Update Job"):
-                try:
-                    update_job(selected_job_edit, comp_id, job_req, job_description) # update the job with the new details
-                    st.success("Updated the {} job successfully".format(selected_job_edit)) # success message
-                except :
-                    # printing an error message if the job was not updated
-                    st.error("This shouldnot happen!!!!!!!")
+                if selected_job_edit:
+                    try:
+                        update_job(selected_job_edit, comp_id, job_req, job_description) # update the job with the new details
+                        st.success("Updated the {} job successfully".format(selected_job_edit)) # success message
+                    except Exception as err:
+                        #print(Exception, err)
+                        # printing an error message if the job was not updated
+                        st.error("This shouldnot happen!!!!!!!")
         else:
             st.info("You don't have any jobs to edit")  # info message to show to the company of no jobs
         
@@ -91,11 +98,15 @@ def load_view(comp_id):
         
         col14, col15, col16 = st.columns((8,3,7))    # styling button alignment
         if col15.button("Add Candidate"):
-            try:
-                add_candidate(candidate_id, candidate_name, candidate_qual)  # add the candidate details to the database
-                st.success("The candidate has been successfully added to the database") # success message 
-            except :
-                st.info("This candidate is already there! Enter a valid candidate ID") # error message informing the reason of the error
+            if candidate_id:
+                try:
+                    add_candidate(candidate_id, candidate_name, candidate_qual)  # add the candidate details to the database
+                    st.success("The candidate has been successfully added to the database") # success message 
+                except :
+                    st.info("This candidate is already there! Enter a valid candidate ID") # error message informing the reason of the error
+            else:
+                st.error("Enter valid data to be added!")
+        
         ################### Edit candidate data ###################
         st.subheader("Edit Candidate data")
         col17,col18 = st.columns(2)
@@ -110,12 +121,15 @@ def load_view(comp_id):
             
         col19, col20, col21 = st.columns((8,3,7))   # styling button alignment
         if col20.button("Edit Candidate"):
-            try:
-                update_cand(candidate_id_edit, candidate_name_edit, candidate_qual_edit) # update the edited detailes in the database
-                st.success("The candidate details has been successfully updated") # success message
-            except:
-                # printing an error message if the candidate was not updated
-                st.error("This shouldnot happen!!!!!!!")
+            if candidate_id_edit:
+                try:
+                    update_cand(candidate_id_edit, candidate_name_edit, candidate_qual_edit) # update the edited detailes in the database
+                    st.success("The candidate details has been successfully updated") # success message
+                except:
+                    # printing an error message if the candidate was not updated
+                    st.error("This shouldnot happen!!!!!!!")
+            else:
+                st.error("Enter valid candidate ID be edited!")
         #################### view all candidates #################
         with st.expander("View all candidate"):
             colex4, colex5, colex6 = st.columns((1,10,1))

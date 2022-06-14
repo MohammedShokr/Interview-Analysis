@@ -1,6 +1,11 @@
+/* navigation bar color: 0d2331 */ 
+/* dark blue primary bg color: 112B3C */ 
+/* blue secondry bg color: 205375 */ 
+/* orange color: F66B0E */ 
+
 :root {
-	--section-color: #417D7A;
-	--numbers-color: #1D5C63;
+	--section-color: #112B3C;
+	--numbers-color: #205375;
 	--bg-color: #1A3C40;
 }
 
@@ -11,10 +16,10 @@
 
 #choose-skills-not-identity > div > span 
 {
-	background-color: #1D5C63;
+	background-color: #112B3C;
 }
 
 #skivia-helps-you-measure-your-candidates-skills > div > span 
 {
-	background-color: #1D5C63;
+	background-color: #112B3C;
 }

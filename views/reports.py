@@ -6,7 +6,13 @@ import matplotlib.pyplot as plt
 import numpy as np 
 
 # Get the top candidates in a certain job
-
+## Define colors
+dark_blue = '#112B3C'
+second_blue_bg = '#205375'
+orange = '#F66B0E'
+orange_bar = '#fc8121'
+white = '#FFFFFF'
+dull_white = '#C8C6C6'
 # ### css ###
 def local_css(file_name):
     with open(file_name) as f:
@@ -23,15 +29,15 @@ def load_view(comp_id):
         "fluency", "fluency_score", "coherence_score", "overall_score"]
 
     rc = {'figure.figsize':(8, 4.5),
-          'axes.facecolor':'#EDE6DB',
-          'axes.edgecolor': '#1A3C40',
-          'axes.labelcolor': '#1A3C40',
-          'figure.facecolor': '#EDE6DB',
-          'patch.edgecolor': '#EDE6DB',
-          'text.color': '#1A3C40',
-          'xtick.color': '#1A3C40',
-          'ytick.color': '#1A3C40',
-          'grid.color': '#1A3C40',
+          'axes.facecolor': second_blue_bg,
+          'axes.edgecolor': dark_blue,
+          'axes.labelcolor': white,
+          'figure.facecolor': second_blue_bg,
+          'patch.edgecolor': orange,
+          'text.color': white,
+          'xtick.color': white,
+          'ytick.color': white,
+          'grid.color': white,
           'font.size' : 12,
           'axes.labelsize': 12,
           'xtick.labelsize': 12,
@@ -58,7 +64,7 @@ def load_view(comp_id):
 
             names = top_cands_df['cand_ID'].tolist()
             scores = top_cands_df[metric_top].tolist()
-            ax.bar(names, scores, color='#1D5C63')
+            ax.bar(names, scores, color=orange_bar)
             plt.xlabel(f'candidate ID')
             plt.ylabel(f'metric: {metric_top}')
             plt.title(f'Candidates sorted by {metric_top}')
@@ -106,8 +112,8 @@ def load_view(comp_id):
             c2_scores = cand2_df[cand2_df.columns[1]].tolist()
 
             # plot lines
-            plt.plot(c1_qn, c1_scores,  marker='o',label=cand1)
-            plt.plot(c2_qn, c2_scores, marker='o', label=cand2)
+            plt.plot(c1_qn, c1_scores,  marker='o',label=cand1, color=dull_white)
+            plt.plot(c2_qn, c2_scores, marker='o', label=cand2, color=orange_bar)
             plt.xlabel(f'Question Number')
             plt.ylabel(f'scores')
             plt.title(f'Candidates Scores over questions')

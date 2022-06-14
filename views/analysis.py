@@ -242,74 +242,77 @@ def load_view(comp_id):
 
                         # FER details
                         with st.container():
-                            try:
-                                st.subheader("FER: average score details")
-                                progressbar_FER_weights(FER_weights) # Display progress bar of the probabilities
-                                st.subheader("FER: score details for each second")
-                                # Prepare and display the FER matrix
-                                FER_matrix = (np.array(FER_matrix)*100).round(decimals=0).astype(int)
-                                FER_np = np.array(list(FER_matrix))
-                                indx = []
-                                for i in range(1, len(FER_np)+1):
-                                    indx.append([i])
-                                indx = np.array(indx)
-                                FER_np = np.append(indx, FER_np, axis=1)
-                                _, colmat, _ = st.columns((2, 4, 2))
-                                df = pd.DataFrame(
-                                    FER_np,
-                                    columns=(['time index(sec)','angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']))
-                                colmat.dataframe(df)
-                                colmat.text("")
-                                colmat.text("")
-                            except:
-                                pass
+                            if 'Facial Analysis' in selections:
+                                try:
+                                    st.subheader("FER: average score details")
+                                    progressbar_FER_weights(FER_weights) # Display progress bar of the probabilities
+                                    st.subheader("FER: score details for each second")
+                                    # Prepare and display the FER matrix
+                                    FER_matrix = (np.array(FER_matrix)*100).round(decimals=0).astype(int)
+                                    FER_np = np.array(list(FER_matrix))
+                                    indx = []
+                                    for i in range(1, len(FER_np)+1):
+                                        indx.append([i])
+                                    indx = np.array(indx)
+                                    FER_np = np.append(indx, FER_np, axis=1)
+                                    _, colmat, _ = st.columns((2, 4, 2))
+                                    df = pd.DataFrame(
+                                        FER_np,
+                                        columns=(['time index(sec)','angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']))
+                                    colmat.dataframe(df)
+                                    colmat.text("")
+                                    colmat.text("")
+                                except:
+                                    pass
 
                         # Tone analysis details
                         with st.container():
-                            try:
-                                st.subheader("Tone: average score details")
-                                progressbar_tone_weights(tone_weights) # Display progress bar of the probabilities
-                                st.subheader("Tone: score details for each 5-seconds")
-                                # Prepare and display the tone matrix
-                                tone_matrix = (np.array(tone_matrix)*100).round(decimals=0).astype(int)
-                                tone_np = np.array(list(tone_matrix))
-                                indx = []
-                                for i in range(1, len(tone_np)+1):
-                                    indx.append([i])
-                                indx = np.array(indx)
-                                tone_np = np.append(indx, tone_np, axis=1)
-                                _, colmat, _ = st.columns((2, 4, 2))
-                                df = pd.DataFrame(
-                                    tone_np,
-                                    columns=(['5-sec number', 'Angry', 'Fear', 'Happy', 'Sad', 'surprise']))
-                                colmat.dataframe(df)
-                                colmat.text("")
-                                colmat.text("")
-                            except:
-                                pass
+                            if 'Tone Analysis' in selections:
+                                try:
+                                    st.subheader("Tone: average score details")
+                                    progressbar_tone_weights(tone_weights) # Display progress bar of the probabilities
+                                    st.subheader("Tone: score details for each 5-seconds")
+                                    # Prepare and display the tone matrix
+                                    tone_matrix = (np.array(tone_matrix)*100).round(decimals=0).astype(int)
+                                    tone_np = np.array(list(tone_matrix))
+                                    indx = []
+                                    for i in range(1, len(tone_np)+1):
+                                        indx.append([i])
+                                    indx = np.array(indx)
+                                    tone_np = np.append(indx, tone_np, axis=1)
+                                    _, colmat, _ = st.columns((2, 4, 2))
+                                    df = pd.DataFrame(
+                                        tone_np,
+                                        columns=(['5-sec number', 'Angry', 'Fear', 'Happy', 'Sad', 'surprise']))
+                                    colmat.dataframe(df)
+                                    colmat.text("")
+                                    colmat.text("")
+                                except:
+                                    pass
                         
                         # Fluency analysis details
                         with st.container():
-                            try:
-                                st.subheader("Fluency: average score details")
-                                progressbar_fluency_weights(fluency_weights) # Display progress bar of the probabilities
-                                st.subheader("Fluency: score details for each 5-seconds")
-                                # Prepare and display the tone matrix
-                                fluency_matrix = (np.array(fluency_matrix)*100).round(decimals=0).astype(int)
-                                fluency_np = np.array(list(fluency_matrix))
-                                indx = []
-                                for i in range(1, len(fluency_np)+1):
-                                    indx.append([i])
-                                indx = np.array(indx)
-                                fluency_np = np.append(indx, fluency_np, axis=1)
-                                _, colmat, _ = st.columns((2, 4, 2))
-                                df = pd.DataFrame(
-                                    fluency_np,
-                                    columns=(['5-sec number', 'Not Fluent', 'Average', 'Fluent']))
-                                colmat.dataframe(df)
-                                colmat.text("")
-                                colmat.text("")
-                            except:
-                                pass
+                            if 'English Fluency Analysis' in selections:
+                                try:
+                                    st.subheader("Fluency: average score details")
+                                    progressbar_fluency_weights(fluency_weights) # Display progress bar of the probabilities
+                                    st.subheader("Fluency: score details for each 5-seconds")
+                                    # Prepare and display the tone matrix
+                                    fluency_matrix = (np.array(fluency_matrix)*100).round(decimals=0).astype(int)
+                                    fluency_np = np.array(list(fluency_matrix))
+                                    indx = []
+                                    for i in range(1, len(fluency_np)+1):
+                                        indx.append([i])
+                                    indx = np.array(indx)
+                                    fluency_np = np.append(indx, fluency_np, axis=1)
+                                    _, colmat, _ = st.columns((2, 4, 2))
+                                    df = pd.DataFrame(
+                                        fluency_np,
+                                        columns=(['5-sec number', 'Not Fluent', 'Average', 'Fluent']))
+                                    colmat.dataframe(df)
+                                    colmat.text("")
+                                    colmat.text("")
+                                except:
+                                    pass
             except:
                 pass

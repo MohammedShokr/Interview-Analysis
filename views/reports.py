@@ -43,6 +43,7 @@ def load_view(comp_id):
           'xtick.labelsize': 12,
           'ytick.labelsize': 12}
     plt.rcParams.update(rc)
+    ############################### Get top 10 candidates ###################################
     col1_spacer1, col1, col1_spacer2 = st.columns((.2, 7.1, .2))
     with col1:
         st.subheader('Top 10 candidates in a Job')
@@ -74,6 +75,7 @@ def load_view(comp_id):
             ##########
             # st.bar_chart(top_cands_df[metric])
 
+    ########################### Compare between two candidates ###############################
     col3_spacer1, col3, col3_spacer2 = st.columns((.2, 7.1, .2))
     with col3:
         st.subheader('Compare between two candidates')
@@ -123,36 +125,8 @@ def load_view(comp_id):
             st.pyplot(fig2)
             st.text("")
             st.text("")
-            ##########
 
-    # # ### TO DOWNLOAD
-    # with st.expander("View all analysis details of candidates"):
-    #     analysis_df = pd.DataFrame(get_analysis_comp(comp_id), columns=analysis_cols)
-    #     st.dataframe(analysis_df)
-    #
-    # ####### EDIT HERE ####
-    # # ### TO DOWNLOAD
-    # col5_spacer1, col5, col5_spacer2 = st.columns((.2, 7.1, .2))
-    # with col5:
-    #     st.subheader('Show all analysis details of a Job')
-    # col6_spacer1, col6_1, col6_spacer2, col6_2, col6_spacer3  = st.columns((.2, 2.3, .4, 4.4, .2))
-    # with col6_1:
-    #     job_title_analysis = st.selectbox("Choose job for analysis", available_jobs)
-    # with col6_2:
-    #     analysis_in_job_df = pd.DataFrame(get_analysis_with_job(comp_id, job_title_analysis), columns=analysis_cols)
-    #     st.dataframe(analysis_in_job_df)
-        
-    # col7_spacer1, col7, col7_spacer2 = st.columns((.2, 7.1, .2))
-    # with col7:
-    #     st.subheader('Show all analysis details of a Candidate')
-    # col8_spacer1, col8_1, col8_spacer2, col8_2, col8_spacer3  = st.columns((.2, 2.3, .4, 4.4, .2))
-    # with col8_1:
-    #     candindate_id = st.text_input("Write Candidate National ID")
-    # with col8_2:
-    #     analysis_candidate_df = pd.DataFrame(get_analysis_with_cand(comp_id, candindate_id), columns=analysis_cols)
-    #     st.dataframe(analysis_candidate_df[analysis_cols[2:]])
-
-    ####### END EDIT HERE ####
+    ############################### Generate Individual Report ###################################
     with st.expander("Individual Report"):
         col1, col2 = st.columns((2, 7))
         with col1:
@@ -306,9 +280,8 @@ def load_view(comp_id):
                                 colmat.text("")
                                 colmat.text("")
                             except:
-                                st.info("No FER data")
+                                pass
 
-                        #########################################################
                         with st.container():
                             try:
                                 dummy = len(tone_weights)
@@ -330,7 +303,7 @@ def load_view(comp_id):
                                 colmat.text("")
                                 colmat.text("")
                             except:
-                                st.info("No tone data")
+                                pass
 
                         with st.container():
                             try:
@@ -353,9 +326,9 @@ def load_view(comp_id):
                                 colmat.text("")
                                 colmat.text("")
                             except:
-                                st.info("No fluency data")
+                                pass
 
-# ### TO DOWNLOAD
+    ######################## Download all analysis details of a Job ###########################
     with st.expander("Download all analysis details of a Job"):
         col5_spacer1, col5, col5_spacer2 = st.columns((.2, 7.1, .2))
         # with col5:
@@ -370,9 +343,8 @@ def load_view(comp_id):
         with col7:
             st.download_button("DOWNLOAD", analysis_in_job_df.to_csv(), file_name=f'all_job_{job_title_analysis}_analysis.csv')
 
-
+    ###################### Download all analysis details of a Candidate ########################
     with st.expander("Download all analysis details of a Candidate"):
-
         col8_spacer1, col8_1, col8_spacer2, col8_2, col8_spacer3  = st.columns((.2, 2.3, .4, 4.4, .2))
         with col8_1:
             candindate_id = st.text_input("Write Candidate National ID", max_chars = 14)
@@ -382,5 +354,3 @@ def load_view(comp_id):
         col7_spacer1, col7, col7_spacer2 = st.columns((4, 2, 4))
         with col7:
             st.download_button("DOWNLOAD", analysis_candidate_df.to_csv(), file_name=f'all_cand_{candindate_id}_analysis.csv')
-
-

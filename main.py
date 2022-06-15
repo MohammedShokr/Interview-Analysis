@@ -21,6 +21,7 @@ from database_functions import *
 import webbrowser
 from bokeh.models.widgets import Div
 import streamlit as st
+import atexit
 
 # code snippet we run in the first time for creating tables
 #create_tables()
@@ -113,5 +114,12 @@ def navigation():
             home.load_view()
 
 
-navigation()
+def my_exit_function():
+    with open("vars.txt", "w") as f2:
+        f2.writelines(f'{0}\n{"NONE"}')
+
+
+if __name__ == '__main__':
+    atexit.register(my_exit_function, )
+    navigation()
 

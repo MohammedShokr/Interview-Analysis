@@ -13,7 +13,6 @@ This Code was made by the following 4 UST-ZC students, for their graduation proj
                                 Giza, 12578, Egypt
 '''
 
-# imports and used libraries
 import streamlit as st
 import utils as utl
 from views import home, data_mng, analysis, reports
@@ -22,19 +21,19 @@ import webbrowser
 from bokeh.models.widgets import Div
 import streamlit as st
 
-# code snippet we run in the first time for creating tables
+
 #create_tables()
 #print(view_schema())
 
 
-# Function to attach CSS file to a specific page
+# ### css ###
 def local_css(file_name):
     with open(file_name) as f:
         st.markdown('<style>{}</style>'.format(f.read()), unsafe_allow_html=True)
 
 
+############
 
-# Keep tracking of the logged in user and ther status
 logged_in = [0, ""]
 with open("vars.txt", "r") as f:
     cache = f.readlines()
@@ -42,20 +41,23 @@ with open("vars.txt", "r") as f:
         logged_in[0] = int(cache[0])
         logged_in[1] = cache[1]
 
-# getting all the users and their passwords from the database
+
+# users_raw = []
+# with open("users.txt", "r") as f1:
+#     users_raw = f1.readlines()
+# users = [usr.split('-')[0].strip() for usr in users_raw]
+# passwords = [usr.split('-')[1].strip() for usr in users_raw]
+
 users_raw = get_company_IDs()
 users = [u[0] for u in users_raw]
 passwords = [get_company(u)[0][2] for u in users]
 
-# the overarching function that directs the user to each specific page
 def navigation():
-    # check for the user status (logged in, sign up, no user logged in)
-    if logged_in[0] == 0: # if no user logged in
+    if logged_in[0] == 0:
         username = st.text_input("Username: ")
         entered_pass = st.text_input("New Password: ", type="password")
         but1 = st.button("Login")
         but2 = st.button("Sign Up")
-        # check for password
         if but1:
             if username in users:
                 user_i = users.index(username)
@@ -73,7 +75,8 @@ def navigation():
             with open("vars.txt", "w") as f2:
                 f2.writelines(f'{3}\n{"blabla"}')
             st.experimental_rerun()
-    elif logged_in[0] == 3: # if the user doesn't exist
+    elif logged_in[0] == 3:
+        # add_company(comp_ID, comp_name, comp_pass, website)
         comp_ID = st.text_input("New username(comp_ID): ")
         comp_name = st.text_input("Company Name: ")
         comp_pass = st.text_input("New Password: ", type="password")
@@ -84,14 +87,25 @@ def navigation():
                 f2.writelines(f'{1}\n{comp_ID}')
             add_company(comp_ID, comp_name, comp_pass, website)
             st.experimental_rerun()
-    elif logged_in[0] == 1: # if the user is already signed in
+    elif logged_in[0] == 1:
         st.set_page_config(layout="wide", page_title='Interview-Analysis')
         st.set_option('deprecation.showPyplotGlobalUse', False)
         utl.inject_custom_css()
         utl.navbar_component(logged_in[1])
         utl.hide_row_index_css()
 
-        # direct the user to the desired page
+        # ### CSS
+        # local_css("styles.css")
+
+        ####
+
+        # col1, col2, col3 = st.columns((10,2,1))
+        # but3 = col3.button("Logout")
+        # if but3:
+        #     with open("vars.txt", "w") as f2:
+        #         f2.writelines(f'{0}\n{"blabla"}')
+        #     st.experimental_rerun()
+
         route = utl.get_current_route()
         if route == "home":
             home.load_view()
@@ -104,6 +118,8 @@ def navigation():
         elif route == "logout":
             with open("vars.txt", "w") as f2:
                 f2.writelines(f'{0}\n{"blabla"}')
+            #st.experimental_rerun()
+            #webbrowser.open("http://localhost:8501/", new=0)
             js = "window.location.href = 'http://localhost:8501/'"  # Current tab
             html = '<img src onerror="{}">'.format(js)
             div = Div(text=html)

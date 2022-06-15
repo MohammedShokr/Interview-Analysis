@@ -1,4 +1,3 @@
-# imports and used libraries
 import os
 import librosa
 import librosa.display
@@ -7,7 +6,6 @@ from pydub import AudioSegment
 from moviepy.editor import *
 
 
-# takes a video file path, and convert it to .wav audio, used later for tone and fluency analysis
 def convert_video_to_audio(video_file, output_ext="wav"):
     filename, ext = os.path.splitext(video_file)
     audio_file = f"{filename}.{output_ext}"
@@ -15,16 +13,18 @@ def convert_video_to_audio(video_file, output_ext="wav"):
     video.audio.write_audiofile(audio_file)
     return audio_file
 
-# segment the audio file into overlapping segments, with certain window length and stride
+
 def divide_audio(audio_path, output_folder_path, seg_len, stride):
     my_audio = AudioSegment.from_wav(audio_path)
     audio_len = len(my_audio)
+    # self.TextResultTone.append(audio_len)
     num_of_segments = int(((audio_len - seg_len)/stride)+1)
     remainder = audio_len-(((num_of_segments-1)*stride)+seg_len)
 
     seg = 0
     wav_num = 1
-    for _ in range(num_of_segments): # segmenting is done here
+    for _ in range(num_of_segments):
+        # self.TextResultTone.append(wav_num)
         segment = my_audio[seg:seg + seg_len]
         segment.export(f'{output_folder_path}/wav_{wav_num}.wav', format="wav")
         seg += stride
@@ -35,7 +35,7 @@ def divide_audio(audio_path, output_folder_path, seg_len, stride):
     silence_percentage = analyze_silence_segments(output_folder_path, wav_num)
     return wav_num, silence_percentage
 
-# detect the percentage of silence in the audio segments, using the rms energy as a metric
+
 def analyze_silence_segments(segments_folder_path, wav_num):
     energies = []
     silent_count = 0
@@ -51,7 +51,7 @@ def analyze_silence_segments(segments_folder_path, wav_num):
         zeros = 1
     if max_energy*100 >= 1:
         zeros = 2
-   
+    # #########
     zeros += 1
     integer_energies = [e*(10**zeros) for e in energies]
     max_energy = max(integer_energies)

@@ -1,0 +1,12 @@
+:root {
+	--section-color: #417D7A;
+	--numbers-color: #1D5C63;
+	--bg-color: #1A3C40;
+}
+
+
+#root > div:nth-child(1) > div > div > div > div > section > div > div:nth-child(1) > div > div > ul > li > div > div:nth-child(1) > div,
+#root > div:nth-child(1) > div > div > div > div > section > div > div:nth-child(1) > div > div > ul > li > div > div:nth-child(1) > div
+{
+	text-align: center;
+}

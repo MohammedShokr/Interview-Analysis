@@ -1,3 +1,4 @@
+# imports and used libraries
 import streamlit as st
 import pandas as pd
 import seaborn as sns
@@ -5,23 +6,26 @@ from Queries import *
 import matplotlib.pyplot as plt
 import numpy as np 
 
-# Get the top candidates in a certain job
 
-# ### css ###
+
+# Function to attach CSS file to a specific page
 def local_css(file_name):
     with open(file_name) as f:
         st.markdown('<style>{}</style>'.format(f.read()), unsafe_allow_html=True)
 
 def load_view(comp_id):
-    ### CSS
+    # load CSS
     local_css("styles_reports.css")
+    
+    # get list of all available jobs, for visualising purposes
     available_jobs = [job[0] for job in get_jobs_comp(comp_id)]
     metrics = ["overall_score", "FER_score", "tone_score", "fluency_score", "coherence_score"]
     jobs_cols = ["job_title", "job_req", "job_description", "comp_ID"]
     analysis_cols = ["cand_ID", "comp_ID", "job_title",\
         "interview_no", "question_no", "FER" , "FER_score", "tone", "tone_score",\
         "fluency", "fluency_score", "coherence_score", "overall_score"]
-
+    
+    # parameters for the matplotlib graphs
     rc = {'figure.figsize':(8, 4.5),
           'axes.facecolor':'#EDE6DB',
           'axes.edgecolor': '#1A3C40',
@@ -37,7 +41,9 @@ def load_view(comp_id):
           'xtick.labelsize': 12,
           'ytick.labelsize': 12}
     plt.rcParams.update(rc)
+    # structuring the page using streamlit columns
     col1_spacer1, col1, col1_spacer2 = st.columns((.2, 7.1, .2))
+    
     with col1:
         st.subheader('Top 10 candidates in a Job')
     with st.container():
@@ -51,8 +57,6 @@ def load_view(comp_id):
             st.text("")
             st.text("")
             top_cands_df = get_top_cands_job(comp_id, job_title_top, metric_top)
-            # st.dataframe(top_cands_df)
-            ##########
             fig1 = plt.figure()
             ax = fig1.add_axes([0, 0, 1, 1])
 
@@ -65,9 +69,8 @@ def load_view(comp_id):
             st.pyplot(fig1)
             st.text("")
             st.text("")
-            ##########
-            # st.bar_chart(top_cands_df[metric])
-
+            
+    # structuring the page using streamlit columns
     col3_spacer1, col3, col3_spacer2 = st.columns((.2, 7.1, .2))
     with col3:
         st.subheader('Compare between two candidates')
@@ -90,8 +93,6 @@ def load_view(comp_id):
             if intv1: intv1 = int(intv1)
             if intv2: intv2 = int(intv2)
             cand1_df, cand2_df = compare_two_cands(comp_id, job_title_compare, cand1, cand2, intv1, intv2, metric_compare)
-            # st.dataframe(cand1_df)
-            # st.dataframe(cand2_df)
             fig2 = plt.figure()
             c1_qn = cand1_df[cand1_df.columns[0]].tolist()
             c1_scores = cand1_df[cand1_df.columns[1]].tolist()
@@ -111,45 +112,14 @@ def load_view(comp_id):
             st.pyplot(fig2)
             st.text("")
             st.text("")
-            ##########
 
-    # # ### TO DOWNLOAD
-    # with st.expander("View all analysis details of candidates"):
-    #     analysis_df = pd.DataFrame(get_analysis_comp(comp_id), columns=analysis_cols)
-    #     st.dataframe(analysis_df)
-    #
-    # ####### EDIT HERE ####
-    # # ### TO DOWNLOAD
-    # col5_spacer1, col5, col5_spacer2 = st.columns((.2, 7.1, .2))
-    # with col5:
-    #     st.subheader('Show all analysis details of a Job')
-    # col6_spacer1, col6_1, col6_spacer2, col6_2, col6_spacer3  = st.columns((.2, 2.3, .4, 4.4, .2))
-    # with col6_1:
-    #     job_title_analysis = st.selectbox("Choose job for analysis", available_jobs)
-    # with col6_2:
-    #     analysis_in_job_df = pd.DataFrame(get_analysis_with_job(comp_id, job_title_analysis), columns=analysis_cols)
-    #     st.dataframe(analysis_in_job_df)
-        
-    # col7_spacer1, col7, col7_spacer2 = st.columns((.2, 7.1, .2))
-    # with col7:
-    #     st.subheader('Show all analysis details of a Candidate')
-    # col8_spacer1, col8_1, col8_spacer2, col8_2, col8_spacer3  = st.columns((.2, 2.3, .4, 4.4, .2))
-    # with col8_1:
-    #     candindate_id = st.text_input("Write Candidate National ID")
-    # with col8_2:
-    #     analysis_candidate_df = pd.DataFrame(get_analysis_with_cand(comp_id, candindate_id), columns=analysis_cols)
-    #     st.dataframe(analysis_candidate_df[analysis_cols[2:]])
-
-    ####### END EDIT HERE ####
     with st.expander("Individual Report"):
         col1, col2 = st.columns((2, 7))
         with col1:
             candindate_ID = st.text_input("Write the Candidate's National ID")
         if candindate_ID:
             st.subheader("General Insights")
-            # col1, col2, col3 = st.columns((2, 6, 2))
             with st.container():
-                # with col2:
                 _, col_ind1, col_ind2, col_ind3, _ = st.columns(5)
                 # No. of jobs applied for
                 cand_analysis_df = pd.DataFrame(get_analysis_with_cand(comp_id, candindate_ID), columns=analysis_cols)
@@ -236,7 +206,6 @@ def load_view(comp_id):
                 with col9:
                     with st.container():
                         ques_no = st.selectbox("Select Question no.", list(cand_questions))
-                ########
                 with st.container():
                     cand_analysis = pd.DataFrame(get_one_analysis(comp_id, cand_job_title, candindate_ID, cand_interview_no, ques_no), columns=analysis_cols)
 
@@ -255,7 +224,6 @@ def load_view(comp_id):
                         # Best coherence score
                         coherence_score = cand_analysis['coherence_score'][0]
                         col_ind7.metric("Topic Coherence Analysis", f'{round(100*coherence_score,2)} %')
-                #######
                 if cand_interview_no: cand_interview_no = int(cand_interview_no)
                 cand_analysis = pd.DataFrame(get_one_analysis(comp_id, cand_job_title, candindate_ID, cand_interview_no, ques_no), columns=analysis_cols)
 
@@ -267,7 +235,6 @@ def load_view(comp_id):
                     FER_weights = np.mean(np.array(FER_matrix), axis=0)
                     tone_weights = np.mean(np.array(tone_matrix), axis=0)
                     fluency_weights = np.mean(np.array(fluency_matrix), axis=0)
-                    # st.write(FER_matrix[0:5])
                     with st.container():
                         try:
                             dummy = len(FER_weights)
@@ -281,8 +248,6 @@ def load_view(comp_id):
                                 indx.append([i])
                             indx = np.array(indx)
                             FER_np = np.append(indx, FER_np, axis=1)
-                            # st.write(np.array(list(FER_matrix)))
-                            # st.write(FER_np)
                             _, colmat, _ = st.columns((2, 4, 2))
                             df = pd.DataFrame(
                                 FER_np,
@@ -293,7 +258,6 @@ def load_view(comp_id):
                         except:
                             st.info("No FER data")
 
-                    #########################################################
                     with st.container():
                         try:
                             dummy = len(tone_weights)
@@ -340,15 +304,14 @@ def load_view(comp_id):
                         except:
                             st.info("No fluency data")
 
-# ### TO DOWNLOAD
+    # Downloading the data option
     with st.expander("Download all analysis details of a Job"):
         col5_spacer1, col5, col5_spacer2 = st.columns((.2, 7.1, .2))
-        # with col5:
-        #     st.subheader('Download all analysis details of a Job')
         col6_spacer1, col6_1, col6_spacer2, col6_2, col6_spacer3  = st.columns((.2, 2.3, .4, 4.4, .2))
         with col6_1:
             job_title_analysis = st.selectbox("Choose job for analysis", available_jobs)
         with col6_2:
+            # query for getting the needed jobs, and converting to a dataframe
             analysis_in_job_df = pd.DataFrame(get_analysis_with_job(comp_id, job_title_analysis), columns=analysis_cols)
             st.dataframe(analysis_in_job_df)
         col7_spacer1, col7, col7_spacer2 = st.columns((4, 2, 4))
@@ -357,11 +320,11 @@ def load_view(comp_id):
 
 
     with st.expander("Download all analysis details of a Candidate"):
-
         col8_spacer1, col8_1, col8_spacer2, col8_2, col8_spacer3  = st.columns((.2, 2.3, .4, 4.4, .2))
         with col8_1:
             candindate_id = st.text_input("Write Candidate National ID")
         with col8_2:
+            # query for getting the needed analysis, and converting to a dataframe
             analysis_candidate_df = pd.DataFrame(get_analysis_with_cand(comp_id, candindate_id), columns=analysis_cols)
             st.dataframe(analysis_candidate_df[analysis_cols[2:]])
         col7_spacer1, col7, col7_spacer2 = st.columns((4, 2, 4))

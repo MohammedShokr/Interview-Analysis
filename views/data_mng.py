@@ -1,172 +1,267 @@
 from faulthandler import disable
+from logging import exception
 from pickle import TRUE
 import streamlit as st
 import pandas as pd
 from database_functions import *
 
 def load_view(comp_id):
-    available_jobs = [job[0] for job in get_jobs_comp(comp_id)]
-    jobs_cols = ["job_title", "job_req", "job_description", "comp_ID"]
-    cand_cols = ["candidate ID", "candidate name", "candidate qualifications"]
+    # getting useful resources to load queries into dataframes consitently
+    available_jobs = [job[0] for job in get_jobs_comp(comp_id)]  # all job titles this company have
+    jobs_cols = ["job_title", "job_req", "job_description", "comp_ID"]  # columns of jobs table
+    cand_cols = ["candidate ID", "candidate name", "candidate qualifications"]  # cloumns of candidate table
     analysis_cols = ["cand_ID", "comp_ID", "job_title",\
         "interview_no", "question_no", "FER" , "FER_score", "tone", "tone_score",\
-        "fluency", "fluency_score", "coherence_score", "overall_score"]
+        "fluency", "fluency_score", "coherence_score", "overall_score"]   # columns of analysis table
     
+    # In a sidebar, let the user select the page to manage from a  dropdown menu
     with st.sidebar:
-        st.subheader("Database Management")
-        menu = ["Manage Jobs","Manage Candidates","Manage Analysis Data"]
-        choice = st.selectbox("Choose what you want to do: ",menu)
-        
+        st.subheader("Database Management")  # informational header
+        menu = ["Manage Jobs","Manage Candidates","Manage Analysis Data"]  # selection menu
+        choice = st.selectbox("Choose what you want to do: ",menu)  # drop down menu creation 
+    
+    ##################################### Manage Jobs ##################################################    
     if choice == "Manage Jobs":
-        
+        ############ Add a new job ################
         st.subheader("Add a new Job")
         col1,col2 = st.columns(2)
         with col1:
-            job_title = st.text_input("Enter a Job Title")
+            job_title = st.text_input("Enter a Job Title")   # text input of job title to be added
 
-        job_req = st.text_input("Job requirements")
-        job_description = st.text_input("Job description")
+        job_req = st.text_input("Job requirements")          # text input of job requirements to be added
+        job_description = st.text_input("Job description")   # text input of job description to be added
         
         col3, col4, col5 = st.columns((8,3,7))
-        if col4.button("Add Job"):
-            try:
-                add_job(job_title, job_req, job_description, comp_id)
-                st.success("Added the {} job to Jobs".format(job_title))
-            except :
-                st.error("This job details is already there! Enter a valid job title that is not already there")
+        if col4.button("Add Job"):    # add job button method
+            if job_title:
+                try:
+                    add_job(job_title, job_req, job_description, comp_id)   #database fuction call to add the job
+                    st.success("Added the {} job to Jobs".format(job_title)) # success message
+                
+                except :
+                    # printing an error message if the job was not added to the database
+                    st.error("This job details is already there! Enter a valid job title that is not already there")
+            else:
+                st.error("Enter a valid job title!")
         
-        
+        ################ Edit job #####################
         st.subheader("Edit Jobs data")
         
-        if len(available_jobs):
-            selected_job_edit = st.selectbox("Choose a Job Title to edit", available_jobs)
-            selected_job_details = get_job(selected_job_edit, comp_id)[0]
-            job_req = st.text_input("Job requirements", selected_job_details[1])
-            job_description = st.text_input("Job description", selected_job_details[2])
-            col6, col7, col8 = st.columns((8,3,7))
+        available_jobs = [job[0] for job in get_jobs_comp(comp_id)]  # all job titles this company have
+        if len(available_jobs):  # only make it available if the company has any jobs to edit
+            selected_job_edit = st.selectbox("Choose a Job Title to edit", available_jobs) # select the job title to edt its info
+            selected_job_details = get_job(selected_job_edit, comp_id)[0] # get the job details of the the selected title, from database functions
+            job_req = st.text_input("Updated job requirements", selected_job_details[1]) # editable textbox viewing current job requirements
+            job_description = st.text_input("Updated job description", selected_job_details[2])  # editable textbox viewing current job description
+            col6, col7, col8 = st.columns((8,3,7))  # styling button alignment
             if col7.button("Update Job"):
-                update_job(selected_job_edit, comp_id, job_req, job_description)
+                if selected_job_edit:
+                    try:
+                        update_job(selected_job_edit, comp_id, job_req, job_description) # update the job with the new details
+                        st.success("Updated the {} job successfully".format(selected_job_edit)) # success message
+                    except Exception as err:
+                        #print(Exception, err)
+                        # printing an error message if the job was not updated
+                        st.error("This shouldnot happen!!!!!!!")
         else:
-            st.info("You don't have any jobs to edit")
+            st.info("You don't have any jobs to edit")  # info message to show to the company of no jobs
         
-            
+        ############## Delete job ################
         st.subheader("Delete a job")
-        col9, col10, col11 = st.columns((6,6,2))
+        col9, col10, col11 = st.columns((6,6,2))   # styling button alignment
         if len(available_jobs):
-            selected_job_delete = col9.selectbox("Choose a Job Title to delete", available_jobs)
-            if col11.button("Delete Job"):
-                delete_job(selected_job_delete, comp_id)
+            selected_job_delete = col9.selectbox("Choose a Job Title to delete", available_jobs) # menu of available job titles to delete 
+            analysis_job_df = pd.DataFrame(get_analysis_with_job(comp_id, job_title), columns=analysis_cols)
+            if not analysis_job_df.empty:
+                st.markdown("Watch out! This job has the following accompanied analysis results.")
+                st.dataframe(analysis_job_df)
+            col37, col38, col39 = st.columns((8, 3, 7))
+            if col38.button("Delete Job"):
+                try:
+                    delete_job(selected_job_delete, comp_id)  #delete a job with the given title
+                    st.success("deleted the {} job successfully".format(selected_job_delete)) # success message
+                except:
+                    # printing an error message if the job was not deleted
+                    st.error("This shouldnot happen!!!!!!!")
         else:
-            st.info("You don't have any jobs to delete")
-            
+            st.info("You don't have any jobs to delete")  # info message to show to the company of no jobs
+        
+        ########### view all jobs ##############
         with st.expander("View all jobs in details"):
-            colex1, colex2, colex3 = st.columns((1,10,1))
-            jobs_df = pd.DataFrame(get_jobs_comp(comp_id), columns=jobs_cols)[jobs_cols[:-1]]
-            colex2.dataframe(jobs_df)
-    
+            colex1, colex2, colex3 = st.columns((1,10,1))   # styling dataframe alignment
+            jobs_df = pd.DataFrame(get_jobs_comp(comp_id), columns=jobs_cols)[jobs_cols[:-1]] # get all jobs of that company with all details
+            colex2.dataframe(jobs_df)   # print the dataframe
+            
+    ######################################### Manage candidates ####################################
     elif choice == "Manage Candidates":
+        ################### Add new candidate ###############
         st.subheader("Add Candidate")
         col12,col13 = st.columns(2)
-        candidate_id = col12.text_input("Enter candidate's ID")
-        candidate_name = col13.text_input("Enter Candidate's name")
-        candidate_qual = st.text_input("Candidate qualifications")
+        candidate_id = col12.text_input("Enter candidate's ID", max_chars = 14)  # text input of candidate ID to add
+        candidate_name = col13.text_input("Enter Candidate's name") # text input of candidate name to add
+        candidate_qual = st.text_input("Candidate qualifications") # text input of candidate qalufications to add
         
-        col14, col15, col16 = st.columns((8,3,7))
+        col14, col15, col16 = st.columns((8,3,7))    # styling button alignment
         if col15.button("Add Candidate"):
-            try:
-                add_candidate(candidate_id, candidate_name, candidate_qual)
-                st.success("The candidate has been successfully added to the database")
-            except :
-                st.info("This candidate is already there! Enter a valid candidate ID")
+            if candidate_id:
+                try:
+                    add_candidate(candidate_id, candidate_name, candidate_qual)  # add the candidate details to the database
+                    st.success("The candidate has been successfully added to the database") # success message 
+                except :
+                    st.info("This candidate is already there! Enter a valid candidate ID") # error message informing the reason of the error
+            else:
+                st.error("Enter valid data to be added!")
         
+        ################### Edit candidate data ###################
         st.subheader("Edit Candidate data")
         col17,col18 = st.columns(2)
-        candidate_id_edit = col17.text_input("Enter the candidate's ID")
+        candidate_id_edit = col17.text_input("Enter the candidate's ID", max_chars = 14) # text input to enter the candidate to be edited
         if candidate_id_edit:
             try:
-                selected_cand_details = get_cand(candidate_id_edit)[0]
-                candidate_name_edit = col18.text_input("Updated candidate name", selected_cand_details[1])
-                candidate_qual_edit = st.text_input("Updated candidate qualifications", selected_cand_details[2])
+                selected_cand_details = get_cand(candidate_id_edit)[0]   # get the candidates details to be easily edited
+                candidate_name_edit = col18.text_input("Updated candidate name", selected_cand_details[1]) # editable textbox with the current candidate name
+                candidate_qual_edit = st.text_input("Updated candidate qualifications", selected_cand_details[2]) # editable textbox with the current candidate qualifications
             except:
-                st.error("You entered a non-valid candidate ID")
+                st.error("You entered a non-valid candidate ID") # error message with the corresponding error
             
-        col19, col20, col21 = st.columns((8,3,7))
+        col19, col20, col21 = st.columns((8,3,7))   # styling button alignment
         if col20.button("Edit Candidate"):
-            update_cand(candidate_id_edit, candidate_name_edit, candidate_qual_edit)
-            st.success("The candidate details has been successfully updated")
+            if candidate_id_edit:
+                try:
+                    update_cand(candidate_id_edit, candidate_name_edit, candidate_qual_edit) # update the edited detailes in the database
+                    st.success("The candidate details has been successfully updated") # success message
+                except:
+                    # printing an error message if the candidate was not updated
+                    st.error("This shouldnot happen!!!!!!!")
+            else:
+                st.error("Enter valid candidate ID be edited!")
+        #################### view all candidates #################
         with st.expander("View all candidate"):
             colex4, colex5, colex6 = st.columns((1,10,1))
-            cands_df = pd.DataFrame(view_candidate_data(), columns=cand_cols)
-            colex5.dataframe(cands_df)        
+            cands_df = pd.DataFrame(view_candidate_data(), columns=cand_cols) # get the candidates table and load it into a dataframe
+            colex5.dataframe(cands_df) # print the dataframe 
+            
+    ###################################### Manage Analysis ########################################        
     elif choice == "Manage Analysis Data":
         ######################## Edit Analysis Data #########################
         st.subheader("Edit Analysis data")
         st.markdown("Choose analysis data to tune the needed weights")
         col22, col23 = st.columns(2)
-        candindate_ID = col22.text_input("Enter Candidate's National ID")
+        candindate_ID = col22.text_input("Enter Candidate's National ID", max_chars = 14) # enter the candidate id to update its analysis results
         if candindate_ID:
+            # getting all analysis of that candidate and load it into a dataframe
             cand_analysis_df = pd.DataFrame(get_analysis_with_cand(comp_id, candindate_ID), columns=analysis_cols)
-            cand_jobs = cand_analysis_df["job_title"].unique()
-            cand_job_title = col23.selectbox("Choose a Job title", cand_jobs)
-            cand_interviews = cand_analysis_df[cand_analysis_df["job_title"]==cand_job_title]["interview_no"]
-            cand_interview_no = col22.selectbox("Select an Interview", cand_interviews.unique())
-            cand_questions = cand_analysis_df[(cand_analysis_df["job_title"]==cand_job_title) &\
-                            (cand_analysis_df["interview_no"]==cand_interview_no)]["question_no"]
-            ques_no = col23.selectbox("Select Question no.", list(cand_questions))
-            cand_interview_no = int(cand_interview_no)
-            cand_analysis = pd.DataFrame(get_one_analysis(comp_id, cand_job_title, candindate_ID, cand_interview_no, ques_no), columns=analysis_cols)
-            
-            st.markdown("Adjust weights to change the effective overall score")
-            col24, col25 = st.columns((10, 3))
-            fer_weight = col24.slider('FER weight', 0, 100, 50)
-            FER_score = col25.text_input('FER Score %', cand_analysis['FER_score'][0], disabled=True)
-            
-            col26, col27 = st.columns((10, 3))
-            tone_weight = col26.slider('Tone analysis weight', 0, 100, 50)
-            tone_score = col27.text_input('Tone analysis Score %', cand_analysis['tone_score'][0], disabled=True)
-            
-            col28, col29 = st.columns((10, 3))
-            fluency_weight = col28.slider('Fluency analysis weight', 0, 100, 50)
-            fluency_score = col29.text_input('Fluency analysis Score %', cand_analysis['fluency_score'][0], disabled=True)
-            
-            col30, col31 = st.columns((10, 3))
-            coherence_weight = col30.slider('English Topic coherence weight', 0, 100, 50)
-            coherence_score = col31.text_input('Topic coherence Score %', round(100*cand_analysis['coherence_score'][0]), disabled=True)
-            
-            _, col32, _, col33, _ = st.columns((1, 5, 0.5, 3, 1))
-            overall_score = ((0.01*fer_weight*cand_analysis['FER_score'][0])+\
-                (0.01*tone_weight*cand_analysis['tone_score'][0])+\
-                (0.01*fluency_weight*cand_analysis['fluency_score'][0])+\
-                (coherence_weight*cand_analysis['coherence_score'][0]))/\
-                (0.01*fer_weight+0.01*tone_weight+0.01*fluency_weight+0.01*coherence_weight)
-            overall_score = col32.text_input('The newly calulated overall score %', round(overall_score,2), disabled=True)
-            col33.markdown("\n")
-            col33.markdown("\n")
-            if col33.button('Update Analysis'):
-                update_one_analysis(comp_id, cand_job_title, candindate_ID, cand_interview_no, ques_no, overall_score)
-                st.success("The analysis data is successfully updated!")
-               
-        ########################### Delete Analysis Data ######################## 
-        st.subheader("Delete Analysis")
+            if not cand_analysis_df.empty:
+                cand_jobs = cand_analysis_df["job_title"].unique() # get the jobs he applied for
+                cand_job_title = col23.selectbox("Choose a Job title", cand_jobs)  # selection menu of avalible jobs the candidate applied for
+                cand_interviews = cand_analysis_df[cand_analysis_df["job_title"]==cand_job_title]["interview_no"] # get all the interview numbers the candidate did for that job
+                cand_interview_no = col22.selectbox("Select an Interview", cand_interviews.unique()) # selelct an interview menu creation
+                cand_questions = cand_analysis_df[(cand_analysis_df["job_title"]==cand_job_title) &\
+                                (cand_analysis_df["interview_no"]==cand_interview_no)]["question_no"] # get the question no. that has results
+                ques_no = col23.selectbox("Select Question no.", list(cand_questions)) # create the selection menu of the available qustions
+                cand_interview_no = int(cand_interview_no) #cast the type of the interview no. into int
+                # get the analysis result according to user selection, and load it into a dataframe.
+                cand_analysis = pd.DataFrame(get_one_analysis(comp_id, cand_job_title, candindate_ID, cand_interview_no, ques_no), columns=analysis_cols)
+                
+                st.markdown("Adjust weights to change the effective overall score") # Inform the user to edit the desired scores
+                
+                # slider tuning of the FER score
+                col24, col25 = st.columns((10, 3))
+                fer_weight = col24.slider('FER weight', 0, 100, 50)
+                FER_score = col25.text_input('FER Score %', cand_analysis['FER_score'][0], disabled=True)
+                
+                # slider tuning of the tone score
+                col26, col27 = st.columns((10, 3))
+                tone_weight = col26.slider('Tone analysis weight', 0, 100, 50)
+                tone_score = col27.text_input('Tone analysis Score %', cand_analysis['tone_score'][0], disabled=True)
+                
+                # slider tuning of the fluency score
+                col28, col29 = st.columns((10, 3))
+                fluency_weight = col28.slider('Fluency analysis weight', 0, 100, 50)
+                fluency_score = col29.text_input('Fluency analysis Score %', cand_analysis['fluency_score'][0], disabled=True)
+                
+                # slider tuning of the coherence score
+                col30, col31 = st.columns((10, 3))
+                coherence_weight = col30.slider('English Topic coherence weight', 0, 100, 50)
+                coherence_score = col31.text_input('Topic coherence Score %', round(100*cand_analysis['coherence_score'][0]), disabled=True)
+                
+                # Recalculate the ooverall score according to the new used weights, and view it
+                _, col32, _, col33, _ = st.columns((1, 5, 0.5, 3, 1))
+                overall_score = ((0.01*fer_weight*cand_analysis['FER_score'][0])+\
+                    (0.01*tone_weight*cand_analysis['tone_score'][0])+\
+                    (0.01*fluency_weight*cand_analysis['fluency_score'][0])+\
+                    (coherence_weight*cand_analysis['coherence_score'][0]))/\
+                    (0.01*fer_weight+0.01*tone_weight+0.01*fluency_weight+0.01*coherence_weight)
+                overall_score = col32.text_input('The newly calulated overall score %', round(overall_score,2), disabled=True)
+                col33.markdown("\n")
+                col33.markdown("\n")
+                if col33.button('Update Analysis'):  # update the analysis result according to the new adjusted weights
+                    update_one_analysis(comp_id, cand_job_title, candindate_ID, cand_interview_no, ques_no, overall_score)
+                    st.success("The analysis data is successfully updated!") # success message
+            else:
+                st.info("This candidate does not have any analysis result")
+        ########################### Delete Analysis results of a candidate ######################## 
+        st.subheader("Delete all analysis result of a candidate")
+        col40, col41 = st.columns(2)
+        all_candindate_ID_delete = col40.text_input("Enter Candidate's National ID to delete its analysis", max_chars = 14)  # textbox to enter candidate id to delete its results data
+        # getting all analysis result of that candidate and load it into a dataframe
+        delete_all_cand_analysis_df = pd.DataFrame(get_analysis_with_cand(comp_id, all_candindate_ID_delete), columns=analysis_cols)
+        if not delete_all_cand_analysis_df.empty:
+            st.dataframe(delete_all_cand_analysis_df)
+            _, col42, _ = st.columns((8,5,7))     # styling button alignment
+            if col42.button('Delete candidate analysis'): # delete the selected analysis result
+                if all_candindate_ID_delete:
+                    delete_analysis_cand(all_candindate_ID_delete, comp_id)
+                    st.success("Analysis results of the selected candidate has been successfully deleted")
+                else:
+                    st.error("Enter a valid candidate ID")
+        elif all_candindate_ID_delete:
+            st.info("This candidate does not have any analysis result")
+        ########################### Delete Analysis results of a job ######################## 
+        st.subheader("Delete all analysis result of a certain job")
+        col43, col44 = st.columns(2)
+        available_analysis_jobs = pd.DataFrame(view_analysis_data(), columns=analysis_cols)['job_title'].unique()
+        if len(available_analysis_jobs):
+            all_job_title_delete = col43.selectbox("Choose a job title to delete its analysis", available_analysis_jobs)  # textbox to enter candidate id to delete its results data
+            # getting all analysis result of that job and load it into a dataframe
+            delete_all_job_analysis_df = pd.DataFrame(get_analysis_with_job(comp_id, all_job_title_delete), columns=analysis_cols)
+            st.markdown("Watch out! This analysis result is about to be deleted.")
+            st.dataframe(delete_all_job_analysis_df)
+            _, col45, _ = st.columns((8,5,7))     # styling button alignment
+            if col45.button('Delete job analysis'): # delete the selected analysis result
+                if all_job_title_delete:
+                    delete_analysis_job(comp_id, all_job_title_delete)
+                    st.success("Analysis results of the selected job has been successfully deleted")
+                else:
+                    st.error("This should not happen!!!!")
+        else:
+            st.info("No analysis results related to your jobs to be deleted")
+        ########################### Delete one Analysis record ######################## 
+        st.subheader("Delete one analysis record")
         col34, col35 = st.columns(2)
-        candindate_ID_delete = col34.text_input("Candidate's National ID")
+        candindate_ID_delete = col34.text_input("Candidate's National ID", max_chars = 14)  # textbox to enter candidate id to delete its results data
+        # getting all analysis result of that candidate and load it into a dataframe
         delete_cand_analysis_df = pd.DataFrame(get_analysis_with_cand(comp_id, candindate_ID_delete), columns=analysis_cols)
         if not delete_cand_analysis_df.empty:
-            delete_cand_jobs = delete_cand_analysis_df["job_title"].unique()
-            delete_cand_job_title = col35.selectbox("Job title", delete_cand_jobs)
-            delete_cand_interviews = delete_cand_analysis_df[delete_cand_analysis_df["job_title"]==delete_cand_job_title]["interview_no"]
-            delete_cand_interview_no = col34.selectbox("Interview Number", delete_cand_interviews.unique())
+            delete_cand_jobs = delete_cand_analysis_df["job_title"].unique()  # get the jobs that candidate applied for
+            delete_cand_job_title = col35.selectbox("Job title", delete_cand_jobs) # let the user select whivh jon=b using drop down menu
+            delete_cand_interviews = delete_cand_analysis_df[delete_cand_analysis_df["job_title"]==delete_cand_job_title]["interview_no"] # get the interviews that candidate did for that job
+            delete_cand_interview_no = col34.selectbox("Interview Number", delete_cand_interviews.unique()) # let the user which interview to delete
             delete_cand_questions = delete_cand_analysis_df[(delete_cand_analysis_df["job_title"]==delete_cand_job_title) &\
-                            (delete_cand_analysis_df["interview_no"]==delete_cand_interview_no)]["question_no"]
-            delete_ques_no = col35.selectbox("Question Number", list(delete_cand_questions))
+                            (delete_cand_analysis_df["interview_no"]==delete_cand_interview_no)]["question_no"] # get the questions of the selected interview
+            delete_ques_no = col35.selectbox("Question Number", list(delete_cand_questions)) # let the user select the question to be deleted
             delete_cand_interview_no = int(delete_cand_interview_no)
+            # # show the user the data to be deleted
             delete_cand_analysis = pd.DataFrame(get_one_analysis(comp_id, delete_cand_job_title, candindate_ID_delete, delete_cand_interview_no, delete_ques_no), columns=analysis_cols)
             st.dataframe(delete_cand_analysis)
-            _, col36, _ = st.columns((8,3,7))
-            if col36.button('Delete analysis'):
+            _, col36, _ = st.columns((8,3,7))     # styling button alignment
+            if col36.button('Delete analysis'): # delete the selected analysis result
                 delete_one_analysis(comp_id, delete_cand_job_title, candindate_ID_delete, delete_cand_interview_no, delete_ques_no)
-        
+        elif candindate_ID_delete:
+            st.info("This candidate does not have any analysis result")
         ###################### View analysis data #################################
-        
-
+        with st.expander("View all analysis"):
+            colex7, colex8, colex9 = st.columns((1,10,1))
+            analysis_df = pd.DataFrame(get_analysis_comp(comp_id), columns=analysis_cols) # get the analysis result in that company and load it into a dataframe
+            colex8.dataframe(analysis_df) # print the dataframe 
         

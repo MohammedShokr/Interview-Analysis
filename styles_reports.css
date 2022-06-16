@@ -1,12 +1,13 @@
 :root {
-	--section-color: #417D7A;
-	--numbers-color: #1D5C63;
-	--bg-color: #1A3C40;
+	--section-color: #205375;
+	--cont-color:#112B3C;
+	--numbers-color: #112B3C;
+	--bg-color: #205375;
 }
 
 
 .stProgress > div > div > div > div {
-            background-image: linear-gradient(to right, #FFFFFF , #EDE6DB);
+            background-image: linear-gradient(to right, #fc8121 , #EDE6DB);
 }
 
 
@@ -32,6 +33,17 @@
 	background-color: var(--section-color);
 }
 
+/**************************** details section *************************/
+
+#root > div:nth-child(1) > div > div > div > div > section > div > div:nth-child(1) > div > div:nth-child(11) > ul > li > div > div:nth-child(1) > div > div:nth-child(8) > div > div:nth-child(2) > div,
+
+#root > div:nth-child(1) > div > div > div > div > section > div > div:nth-child(1) > div > div:nth-child(11) > ul > li > div > div:nth-child(1) > div > div:nth-child(8) > div > div:nth-child(3) > div,
+
+#root > div:nth-child(1) > div > div > div > div > section > div > div:nth-child(1) > div > div:nth-child(11) > ul > li > div > div:nth-child(1) > div > div:nth-child(8) > div > div:nth-child(4) > div
+
+{
+	background-color: var(--cont-color);
+}
 
 /*******************************numbers********************************/
 #root > div:nth-child(1) > div > div > div > div > section > div > div:nth-child(1) > div > div:nth-child(11) > ul > li > div > div:nth-child(1) > div > div:nth-child(3) > div > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div > div > div > div > div,

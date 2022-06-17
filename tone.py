@@ -78,7 +78,7 @@ def analyze_tone(audio_file):
     expression_matrix = analyze_audio_segments("./tone_analysis/seg_result", wav_num) #CHANGE PATH TO: "./tone_analysis/seg_result"
     expression_weights = np.mean(np.array(list(expression_matrix.values())), axis=0)
     score = scoring_tone_expressions(expression_weights)
-    print(expression_matrix)
-    print("--------------")
-    print(expression_weights)
+    #print(expression_matrix)
+    #print("--------------")
+    #print(expression_weights)
     return score/10, expression_matrix, expression_weights, silence

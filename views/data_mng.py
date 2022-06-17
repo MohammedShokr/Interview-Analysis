@@ -71,7 +71,7 @@ def load_view(comp_id):
         col9, col10, col11 = st.columns((6,6,2))   # styling button alignment
         if len(available_jobs):
             selected_job_delete = col9.selectbox("Choose a Job Title to delete", available_jobs) # menu of available job titles to delete 
-            analysis_job_df = pd.DataFrame(get_analysis_with_job(comp_id, job_title), columns=analysis_cols)
+            analysis_job_df = pd.DataFrame(get_analysis_with_job(comp_id, selected_job_delete), columns=analysis_cols)
             if not analysis_job_df.empty:
                 st.markdown("Watch out! This job has the following accompanied analysis results.")
                 st.dataframe(analysis_job_df)

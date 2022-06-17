@@ -90,7 +90,7 @@ def load_view(comp_id):
             interview_number = col_12.number_input('Interview No.', 1, 10)  # Getting the interview number
 
     ############################# Uploading the playing the video #######################################
-    st.header("Upload A Video to Analyze🥳")
+    st.header("Upload A Video to Analyze🎞")
     uploaded_file = st.file_uploader("Choose a file", type=['mp4','webm']) # Uploading video from local disk
     if uploaded_file is not None:
         st.video(uploaded_file) # Display the video
@@ -119,7 +119,7 @@ def load_view(comp_id):
                 frames_flag = (len(FER_matrix.keys()))/(total_frames//10) < 0.75
 
                 # Display the FER score
-                st.write(f'The score based on face expression analysis is: {FER_score} %')
+                st.write(f'The score based on face expression analysis is: {round(FER_score,2)} %')
                 st.progress(FER_score/100)
                 overall_score = FER_score # Set the overall score to the FER score if it is the only selected model
             
@@ -135,7 +135,7 @@ def load_view(comp_id):
                     # Call the analyze tone function on the audio
                     tone_score, tone_matrix, tone_weights, silence = analyze_tone(audio_path)
                 # Display the tone score
-                st.write(f'The score based on tone analysis is: {tone_score} %')
+                st.write(f'The score based on tone analysis is: {round(tone_score,2)} %')
                 st.progress(tone_score/100)
                 overall_score = tone_score # Set the overall score to the tone score if it is the only selected model
                 if silence >= 50:
@@ -178,27 +178,28 @@ def load_view(comp_id):
             
          ####################### Adding the analysis to the database #################################
             if addAnalysisBx:
-                if curr_cand_data:
-                    cand_id = curr_cand_id
+                if selections: 
+                    if curr_cand_data:
+                        cand_id = curr_cand_id
 
-                # If an analysis with the same data exists; update it with the new data
-                if len(get_one_analysis(comp_id, job_title, cand_id, interview_number, ques_number)):
-                    delete_one_analysis(comp_id, job_title, cand_id, interview_number, ques_number)
-                    st.info("This analysis entry has been updated in the database")
-                else:
-                    st.info("This analysis enty has been added to the database")
-                # Add analysis with the current data to the database
-                add_analysis(cand_id, comp_id, job_title, interview_number, ques_number, str(FER_matrix),\
-                    FER_score, str(tone_matrix), tone_score, str(fluency_matrix), fluency_score,\
-                    coherence_score, overall_score)
-                if frames_flag:
-                    # If the face was't detected on >75% of the frames don't store the result and show a warning
-                    st.warning('''WARNING: The results were added to the database.
-                               The interviewee's  face was not detected most of the time''')
-                    col4, col5, col6 = st.columns([5,4,3])
-                    if col5.button("Delete Analysis"):
-                        st.write(job_title)
+                    # If an analysis with the same data exists; update it with the new data
+                    if len(get_one_analysis(comp_id, job_title, cand_id, interview_number, ques_number)):
                         delete_one_analysis(comp_id, job_title, cand_id, interview_number, ques_number)
+                        st.info("This analysis entry has been updated in the database")
+                    else:
+                        st.info("This analysis enty has been added to the database")
+                    # Add analysis with the current data to the database
+                    add_analysis(cand_id, comp_id, job_title, interview_number, ques_number, str(FER_matrix),\
+                        FER_score, str(tone_matrix), tone_score, str(fluency_matrix), fluency_score,\
+                        coherence_score, overall_score)
+                    if frames_flag:
+                        # If the face was't detected on >75% of the frames don't store the result and show a warning
+                        st.warning('''WARNING: The results were added to the database.
+                                The interviewee's  face was not detected most of the time''')
+                        col4, col5, col6 = st.columns([5,4,3])
+                        if col5.button("Delete Analysis"):
+                            st.write(job_title)
+                            delete_one_analysis(comp_id, job_title, cand_id, interview_number, ques_number)
             else:
                 if frames_flag:
                     st.warning('''WARNING: The interviewee's  face was not detected most of the time''')
@@ -216,12 +217,12 @@ def load_view(comp_id):
                             _, col_ind4, col_ind5, col_ind6, col_ind7, _ = st.columns((1,4,4,4,4,1))
                             # FER score
                             if 'Facial Analysis' in selections:
-                                col_ind4.metric("Facial Expression Analysis", f'{FER_score} %')
+                                col_ind4.metric("Facial Expression Analysis", f'{round(FER_score,2)} %')
                             else:
                                 col_ind4.metric("Facial Expression Analysis", '-')
                             # Tone analysis score
                             if 'Tone Analysis' in selections:
-                                col_ind5.metric("Tone Analysis", f'{tone_score} %')
+                                col_ind5.metric("Tone Analysis", f'{round(tone_score,2)} %')
                             else:
                                 col_ind5.metric("Tone Analysis", '-')
                             # Fluency score

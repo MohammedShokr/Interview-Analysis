@@ -56,7 +56,9 @@ def load_view(comp_id):
         with st.container():
             col2_spacer1, col2_1, col2_spacer2, col2_2, col2_spacer3  = st.columns((.2, 2.3, .4, 4.4, .2))
             with col2_1:
-                st.markdown('More details can be witten here')
+                st.markdown('The opposite graph shows the top 10 candidates in a certain job with a specific\
+                    chosen average evaluation metric in the most recent interview; the calculated overall score,\
+                     the average FER score, the average tone score, the average topic coherence score, or the average English fluency score')
                 job_title_top = st.selectbox("Choose a job", available_jobs)
                 metric_top = st.selectbox("Choose metric used for comparison", metrics)
 
@@ -129,7 +131,7 @@ def load_view(comp_id):
     with st.expander("Individual Report"):
         col1, col2 = st.columns((2, 7))
         with col1:
-            candindate_ID = st.text_input("Write the Candidate's National ID")
+            candindate_ID = st.text_input("Write the Candidate's National ID", max_chars = 14)
             cand_analysis_df = pd.DataFrame(get_analysis_with_cand(comp_id, candindate_ID), columns=analysis_cols)
 
         if candindate_ID:
@@ -286,7 +288,7 @@ def load_view(comp_id):
                                 indx.append([i])
                             indx = np.array(indx)
                             tone_np = np.append(indx, tone_np, axis=1)
-                            _, colmat, _ = st.columns((2, 4, 2))
+                            _, colmat, _ = st.columns((3, 4, 2))
                             df = pd.DataFrame(
                                 tone_np,
                                 columns=(['5-sec number', 'Angry', 'Fear', 'Happy', 'Sad', 'surprise']))
@@ -309,7 +311,7 @@ def load_view(comp_id):
                                 indx.append([i])
                             indx = np.array(indx)
                             fluency_np = np.append(indx, fluency_np, axis=1)
-                            _, colmat, _ = st.columns((2, 4, 2))
+                            _, colmat, _ = st.columns((3, 4, 1.5))
                             df = pd.DataFrame(
                                 fluency_np,
                                 columns=(['5-sec number', 'Not Fluent', 'Average', 'Fluent']))
@@ -324,7 +326,7 @@ def load_view(comp_id):
     # Downloading the data option
     with st.expander("Download all analysis details of a Job"):
         col5_spacer1, col5, col5_spacer2 = st.columns((.2, 7.1, .2))
-        col6_spacer1, col6_1, col6_spacer2, col6_2, col6_spacer3  = st.columns((.2, 2.3, .4, 4.4, .2))
+        col6_spacer1, col6_1, col6_spacer2, col6_2, col6_spacer3  = st.columns((.1, 2, .2, 6, .1))
         with col6_1:
             job_title_analysis = st.selectbox("Choose job for analysis", available_jobs)
         with col6_2:
@@ -337,9 +339,9 @@ def load_view(comp_id):
 
 
     with st.expander("Download all analysis details of a Candidate"):
-        col8_spacer1, col8_1, col8_spacer2, col8_2, col8_spacer3  = st.columns((.2, 2.3, .4, 4.4, .2))
+        col8_spacer1, col8_1, col8_spacer2, col8_2, col8_spacer3  = st.columns((.1, 2, .2, 6, .1))
         with col8_1:
-            candindate_id = st.text_input("Write Candidate National ID")
+            candindate_id = st.text_input("Write Candidate National ID", max_chars = 14)
         with col8_2:
             # query for getting the needed analysis, and converting to a dataframe
             analysis_candidate_df = pd.DataFrame(get_analysis_with_cand(comp_id, candindate_id), columns=analysis_cols)

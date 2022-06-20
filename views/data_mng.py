@@ -4,6 +4,10 @@ from pickle import TRUE
 import streamlit as st
 import pandas as pd
 from database_functions import *
+import seaborn as sns
+
+orange = '#F66B0E'
+
 
 def load_view(comp_id):
     # getting useful resources to load queries into dataframes consitently
@@ -74,7 +78,7 @@ def load_view(comp_id):
             analysis_job_df = pd.DataFrame(get_analysis_with_job(comp_id, selected_job_delete), columns=analysis_cols)
             if not analysis_job_df.empty:
                 st.markdown("Watch out! This job has the following accompanied analysis results.")
-                st.dataframe(analysis_job_df)
+                st.dataframe(analysis_job_df.style.background_gradient(cmap=sns.light_palette(orange, as_cmap=True)))
             col37, col38, col39 = st.columns((8, 3, 7))
             if col38.button("Delete Job"):
                 try:
@@ -207,7 +211,7 @@ def load_view(comp_id):
         # getting all analysis result of that candidate and load it into a dataframe
         delete_all_cand_analysis_df = pd.DataFrame(get_analysis_with_cand(comp_id, all_candindate_ID_delete), columns=analysis_cols)
         if not delete_all_cand_analysis_df.empty:
-            st.dataframe(delete_all_cand_analysis_df)
+            st.dataframe(delete_all_cand_analysis_df.style.background_gradient(cmap=sns.light_palette(orange, as_cmap=True)))
             _, col42, _ = st.columns((8,5,7))     # styling button alignment
             if col42.button('Delete candidate analysis'): # delete the selected analysis result
                 if all_candindate_ID_delete:
@@ -226,7 +230,7 @@ def load_view(comp_id):
             # getting all analysis result of that job and load it into a dataframe
             delete_all_job_analysis_df = pd.DataFrame(get_analysis_with_job(comp_id, all_job_title_delete), columns=analysis_cols)
             st.markdown("Watch out! This analysis result is about to be deleted.")
-            st.dataframe(delete_all_job_analysis_df)
+            st.dataframe(delete_all_job_analysis_df.style.background_gradient(cmap=sns.light_palette(orange, as_cmap=True)))
             _, col45, _ = st.columns((8,5,7))     # styling button alignment
             if col45.button('Delete job analysis'): # delete the selected analysis result
                 if all_job_title_delete:
@@ -253,7 +257,7 @@ def load_view(comp_id):
             delete_cand_interview_no = int(delete_cand_interview_no)
             # # show the user the data to be deleted
             delete_cand_analysis = pd.DataFrame(get_one_analysis(comp_id, delete_cand_job_title, candindate_ID_delete, delete_cand_interview_no, delete_ques_no), columns=analysis_cols)
-            st.dataframe(delete_cand_analysis)
+            st.dataframe(delete_cand_analysis.style.background_gradient(cmap=sns.light_palette(orange, as_cmap=True)))
             _, col36, _ = st.columns((8,3,7))     # styling button alignment
             if col36.button('Delete analysis'): # delete the selected analysis result
                 delete_one_analysis(comp_id, delete_cand_job_title, candindate_ID_delete, delete_cand_interview_no, delete_ques_no)
@@ -263,5 +267,5 @@ def load_view(comp_id):
         with st.expander("View all analysis"):
             colex7, colex8, colex9 = st.columns((1,10,1))
             analysis_df = pd.DataFrame(get_analysis_comp(comp_id), columns=analysis_cols) # get the analysis result in that company and load it into a dataframe
-            colex8.dataframe(analysis_df) # print the dataframe 
+            colex8.dataframe(analysis_df.style.background_gradient(cmap=sns.light_palette(orange, as_cmap=True))) # print the dataframe 
         

@@ -269,7 +269,7 @@ def load_view(comp_id):
                                 df = pd.DataFrame(
                                     FER_np,
                                     columns=(['time index(sec)','angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']))
-                                colmat.dataframe(df)
+                                colmat.dataframe(df.style.background_gradient(cmap=sns.light_palette(orange, as_cmap=True)))
                                 colmat.text("")
                                 colmat.text("")
                             except:
@@ -292,7 +292,7 @@ def load_view(comp_id):
                             df = pd.DataFrame(
                                 tone_np,
                                 columns=(['5-sec number', 'Angry', 'Fear', 'Happy', 'Sad', 'surprise']))
-                            colmat.dataframe(df)
+                            colmat.dataframe(df.style.background_gradient(cmap=sns.light_palette(orange, as_cmap=True)))
                             colmat.text("")
                             colmat.text("")
                         except:
@@ -315,7 +315,7 @@ def load_view(comp_id):
                             df = pd.DataFrame(
                                 fluency_np,
                                 columns=(['5-sec number', 'Not Fluent', 'Average', 'Fluent']))
-                            colmat.dataframe(df)
+                            colmat.dataframe(df.style.background_gradient(cmap=sns.light_palette(orange, as_cmap=True)))
                             colmat.text("")
                             colmat.text("")
                         except:
@@ -332,7 +332,7 @@ def load_view(comp_id):
         with col6_2:
             # query for getting the needed jobs, and converting to a dataframe
             analysis_in_job_df = pd.DataFrame(get_analysis_with_job(comp_id, job_title_analysis), columns=analysis_cols)
-            st.dataframe(analysis_in_job_df)
+            st.dataframe(analysis_in_job_df.style.background_gradient(cmap=sns.light_palette(orange, as_cmap=True)))
         col7_spacer1, col7, col7_spacer2 = st.columns((4, 2, 4))
         with col7:
             st.download_button("DOWNLOAD", analysis_in_job_df.to_csv(), file_name=f'all_job_{job_title_analysis}_analysis.csv')
@@ -345,7 +345,7 @@ def load_view(comp_id):
         with col8_2:
             # query for getting the needed analysis, and converting to a dataframe
             analysis_candidate_df = pd.DataFrame(get_analysis_with_cand(comp_id, candindate_id), columns=analysis_cols)
-            st.dataframe(analysis_candidate_df[analysis_cols[2:]])
+            st.dataframe(analysis_candidate_df[analysis_cols[2:]].style.background_gradient(cmap=sns.light_palette(orange, as_cmap=True)))
         col7_spacer1, col7, col7_spacer2 = st.columns((4, 2, 4))
         with col7:
             st.download_button("DOWNLOAD", analysis_candidate_df.to_csv(), file_name=f'all_cand_{candindate_id}_analysis.csv')

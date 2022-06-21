@@ -32,6 +32,8 @@ def navbar_component(comp_id):
     with open("assets/images/settings.png", "rb") as image_file:
         image_as_base64 = base64.b64encode(image_file.read())
 
+    with open("./SKIVIA.png", "rb") as logo_file:
+        logo_as_base64 = base64.b64encode(logo_file.read())
     navbar_items = ''
     for key, value in NAVBAR_PATHS.items():
         navbar_items += (f'<a class="navitem" href="/?nav={value}">{key}</a>')
@@ -47,6 +49,7 @@ def navbar_component(comp_id):
                 {navbar_items}
                 </ul>
                 <p class="welcome"> Welcome {comp_id} ! </p>
+                <img class="logo" src="data:image/png;base64, {logo_as_base64.decode("utf-8")}" width="120" height="55"/>
                 <div class="dropdown" id="settingsDropDown">
                     <img class="dropbtn" src="data:image/png;base64, {image_as_base64.decode("utf-8")}"/>
                     <div id="myDropdown" class="dropdown-content">

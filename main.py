@@ -86,7 +86,7 @@ def navigation():
             add_company(comp_ID, comp_name, comp_pass, website)
             st.experimental_rerun()
     elif logged_in[0] == 1: # if the user is already signed in
-        st.set_page_config(layout="wide", page_title='Interview-Analysis')
+        st.set_page_config(layout="wide", page_title='SKIVIA', page_icon="SKIVIA.ico")
         st.set_option('deprecation.showPyplotGlobalUse', False)
         utl.inject_custom_css()
         utl.navbar_component(logged_in[1])

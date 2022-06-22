@@ -1,11 +1,11 @@
 .navbar{
     font-family: 'Trebuchet MS', sans-serif;
     position: fixed;
-    width: 100%;
+    width: 120%;
     background: #205375;
     z-index: 99999999999999999999;
-    left: 0rem;
-    top: 0rem;
+    left: 120px;
+    top: 2px;
     height: 55px;
 }
 
@@ -101,4 +101,12 @@ iframe{
     position: fixed;
     display: inline-block;
     right: 5rem;
+}
+
+.logo {
+    position:fixed;
+    display: inline-block;
+    left: 0rem;
+    top: 2px;
+
 }
